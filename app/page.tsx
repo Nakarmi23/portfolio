@@ -1,3 +1,4 @@
+import { HashSync } from "@/components/hash-sync";
 import { Reveal } from "@/components/reveal";
 import { SystemStory } from "@/components/system-story";
 import { capabilities, emailLabel, firstEmail, lines, person, profileLinks, register, route } from "@/content/site";
@@ -6,12 +7,15 @@ const mailto = `mailto:${person.email}?subject=New%20project`;
 
 const gutter = "px-4 sm:px-8 lg:px-14 xl:px-20";
 const h2 = "text-[clamp(2.25rem,4.4vw,3.75rem)] leading-[1] font-bold tracking-[-0.035em] [font-stretch:112%]";
+const sections = ["work", "approach", "experience", "contact"];
+
 const press = "transition-[background-color,color,transform] duration-200 active:translate-y-[1px]";
 
 export default function Home() {
   return (
     <>
       <Reveal />
+      <HashSync ids={sections} />
       <header className="fixed inset-x-0 top-0 z-30 border-b border-rule bg-ground">
         <div className={`flex h-16 items-center justify-between gap-6 ${gutter}`}>
           <a href="#top" className="text-[17px] font-bold tracking-tight [font-stretch:112%]">
@@ -185,7 +189,7 @@ export default function Home() {
           </table>
         </section>
 
-        <section aria-labelledby="contact-title" className="border-t border-rule bg-raised">
+        <section id="contact" aria-labelledby="contact-title" className="border-t border-rule bg-raised">
           <div className={`grid gap-16 pt-32 pb-28 lg:grid-cols-12 ${gutter}`}>
             <div className="lg:col-span-7">
               <h2
