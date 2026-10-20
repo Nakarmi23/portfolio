@@ -1,3 +1,4 @@
+import { CopyEmail } from "@/components/copy-email";
 import { HashSync } from "@/components/hash-sync";
 import { Reveal } from "@/components/reveal";
 import { SystemStory } from "@/components/system-story";
@@ -52,9 +53,7 @@ export default function Home() {
                 <a href={mailto} className={`bg-signal px-6 py-3.5 text-lg font-semibold text-signal-ink hover:bg-ink ${press}`}>
                   Start a project
                 </a>
-                <a href={mailto} className="text-lg text-ink-soft underline decoration-rule-strong transition-colors hover:text-ink hover:decoration-signal">
-                  {emailLabel}
-                </a>
+                <CopyEmail email={person.email} label={emailLabel} className="text-lg text-ink-soft" />
               </div>
               <p data-reveal className="mt-6 flex items-center gap-3 text-[15px] text-ink-soft">
                 <span aria-hidden className="size-2 bg-steel" />
@@ -210,10 +209,7 @@ export default function Home() {
                 Start a project
               </a>
               <p data-reveal className="mt-5 text-lg text-ink-soft">
-                or write to{" "}
-                <a href={mailto} className="text-ink underline decoration-rule-strong hover:decoration-signal">
-                  {emailLabel}
-                </a>
+                or write to <CopyEmail email={person.email} label={emailLabel} className="text-ink" />
               </p>
             </div>
 
