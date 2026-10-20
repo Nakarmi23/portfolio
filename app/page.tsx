@@ -173,8 +173,12 @@ export default function Home() {
                   <td className="py-5 pr-6">
                     <span className="block text-lg font-semibold">{row.role}</span>
                     <span className="block text-ink-soft sm:hidden">{row.org}</span>
+                    {row.note && <span className="block text-sm text-ink-faint sm:hidden">{row.note}</span>}
                   </td>
-                  <td className="hidden py-5 text-lg text-ink-soft sm:table-cell">{row.org}</td>
+                  <td className="hidden py-5 text-ink-soft sm:table-cell">
+                    <span className="block text-lg">{row.org}</span>
+                    {row.note && <span className="block text-sm text-ink-faint">{row.note}</span>}
+                  </td>
                 </tr>
               ))}
             </tbody>

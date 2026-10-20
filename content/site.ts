@@ -162,10 +162,13 @@ export type RegisterRow = {
   years: string;
   role: string;
   org: string;
+  // Parent company or client, shown smaller beneath the organisation.
+  note?: string;
 };
 
 export const register: RegisterRow[] = [
-  { years: "Mar 2025 – Oct 2026", role: "Senior Software Developer", org: "Proshore Nepal, contracted to Health Catalyst" },
+  { years: "Oct 2026 – Present", role: "Solutions Architect", org: "Cedar Gate Technologies", note: "an IQVIA business" },
+  { years: "Mar 2025 – Oct 2026", role: "Senior Software Developer", org: "Proshore Nepal", note: "contracted to Health Catalyst" },
   { years: "Mar 2018 – Mar 2025", role: "Senior Software Developer", org: "Channakya Software Pvt. Ltd." },
   { years: "Nov 2015 – Jun 2017", role: "Junior Web Designer", org: "Freelance Unit Pvt. Ltd." },
 ];
