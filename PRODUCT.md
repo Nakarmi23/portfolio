@@ -10,9 +10,9 @@ web
 
 A mixed audience landing on the personal site of Ankit Nakarmi (name taken from the git author; confirm spelling before shipping):
 
-- **Hiring managers and recruiters** checking fit for a full-stack or solutions-architect role.
-- **Prospective clients** (founders, agencies) deciding whether to bring Ankit in on a project.
-- **Peers** looking at the work and background.
+- **Prospective freelance clients** (founders, agencies, product teams): the **primary** audience. They decide whether to bring Ankit in on a project.
+- **Hiring managers and recruiters** checking fit for a full-stack or solutions-architect role (secondary).
+- **Peers** looking at the work and background (secondary).
 
 Visitors are usually short on time and arrive from a link (LinkedIn, GitHub, a résumé, a referral). Their job is to work out quickly what Ankit builds and how he thinks, then decide whether to get in touch.
 
@@ -24,7 +24,11 @@ A personal portfolio for a **Full Stack Software Engineer and Solutions Architec
 
 Ankit works across both levels: hands-on full-stack engineering and solutions architecture (system design, technical decisions, trade-offs). The case studies should show both the shipped product and the architectural reasoning behind it.
 
-**Open decision:** Ankit hasn't yet stated the specific angle or differentiator a visitor should remember. Don't invent one; ask before writing headline or positioning copy.
+**Angle (confirmed 2026-10-20):** the site is mainly for **freelance work**. The thing to remember combines two ideas: *an architect who ships*, meaning one person who designs the system and builds it, and *scale and reliability*, meaning systems built to hold up under load. Copy may state this angle, but specific claims about scale (numbers, uptime, traffic) need real evidence from Ankit.
+
+**Tone guardrails:** not a generic SaaS hero, not playful, not corporate or consultancy-speak.
+
+**Brand commitment (pinned 2026-10-20):** technical and immersive. The landing page is built around an interactive WebGL centrepiece, a living system architecture the visitor can explore, with everything around it dark, precise and understated. Craft bar: it should sit alongside linear.app and Awwwards-level developer portfolios. Metaphor-led worlds (transit maps, surveys, industrial objects, crafts) were tried and rejected as unsuitable for a solutions architect.
 
 ## Operating Context
 

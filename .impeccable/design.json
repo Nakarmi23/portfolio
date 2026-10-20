@@ -1,0 +1,402 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-20T12:00:00Z",
+  "title": "Design System: Ankit Nakarmi",
+  "extensions": {
+    "colorMeta": {
+      "ground": {
+        "role": "neutral",
+        "displayName": "Night Ground",
+        "canonical": "oklch(15.4% 0.009 264)",
+        "tonalRamp": [
+          "oklch(15% 0.009 264)",
+          "oklch(25% 0.009 264)",
+          "oklch(36% 0.009 264)",
+          "oklch(47% 0.009 264)",
+          "oklch(58% 0.009 264)",
+          "oklch(70% 0.009 264)",
+          "oklch(82% 0.009 264)",
+          "oklch(95% 0.009 264)"
+        ]
+      },
+      "raised": {
+        "role": "neutral",
+        "displayName": "Raised Ground",
+        "canonical": "oklch(19.1% 0.013 264)",
+        "tonalRamp": [
+          "oklch(15% 0.013 264)",
+          "oklch(25% 0.013 264)",
+          "oklch(36% 0.013 264)",
+          "oklch(47% 0.013 264)",
+          "oklch(58% 0.013 264)",
+          "oklch(70% 0.013 264)",
+          "oklch(82% 0.013 264)",
+          "oklch(95% 0.013 264)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Signal White",
+        "canonical": "oklch(94.2% 0.007 261)",
+        "tonalRamp": [
+          "oklch(15% 0.007 261)",
+          "oklch(25% 0.007 261)",
+          "oklch(36% 0.007 261)",
+          "oklch(47% 0.007 261)",
+          "oklch(58% 0.007 261)",
+          "oklch(70% 0.007 261)",
+          "oklch(82% 0.007 261)",
+          "oklch(95% 0.007 261)"
+        ]
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Soft Steel Ink",
+        "canonical": "oklch(71.3% 0.024 261)",
+        "tonalRamp": [
+          "oklch(15% 0.024 261)",
+          "oklch(25% 0.024 261)",
+          "oklch(36% 0.024 261)",
+          "oklch(47% 0.024 261)",
+          "oklch(58% 0.024 261)",
+          "oklch(70% 0.024 261)",
+          "oklch(82% 0.024 261)",
+          "oklch(95% 0.024 261)"
+        ]
+      },
+      "ink-faint": {
+        "role": "neutral",
+        "displayName": "Faint Steel Ink",
+        "canonical": "oklch(61.5% 0.028 263)",
+        "tonalRamp": [
+          "oklch(15% 0.028 263)",
+          "oklch(25% 0.028 263)",
+          "oklch(36% 0.028 263)",
+          "oklch(47% 0.028 263)",
+          "oklch(58% 0.028 263)",
+          "oklch(70% 0.028 263)",
+          "oklch(82% 0.028 263)",
+          "oklch(95% 0.028 263)"
+        ]
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "rgba(233, 236, 241, 0.09)",
+        "tonalRamp": [
+          "oklch(15% 0.007 261)",
+          "oklch(25% 0.007 261)",
+          "oklch(36% 0.007 261)",
+          "oklch(47% 0.007 261)",
+          "oklch(58% 0.007 261)",
+          "oklch(70% 0.007 261)",
+          "oklch(82% 0.007 261)",
+          "oklch(95% 0.007 261)"
+        ]
+      },
+      "rule-strong": {
+        "role": "neutral",
+        "displayName": "Strong Hairline",
+        "canonical": "rgba(233, 236, 241, 0.18)",
+        "tonalRamp": [
+          "oklch(15% 0.007 261)",
+          "oklch(25% 0.007 261)",
+          "oklch(36% 0.007 261)",
+          "oklch(47% 0.007 261)",
+          "oklch(58% 0.007 261)",
+          "oklch(70% 0.007 261)",
+          "oklch(82% 0.007 261)",
+          "oklch(95% 0.007 261)"
+        ]
+      },
+      "steel": {
+        "role": "neutral",
+        "displayName": "Steel",
+        "canonical": "oklch(62.4% 0.029 259)",
+        "tonalRamp": [
+          "oklch(15% 0.029 259)",
+          "oklch(25% 0.029 259)",
+          "oklch(36% 0.029 259)",
+          "oklch(47% 0.029 259)",
+          "oklch(58% 0.029 259)",
+          "oklch(70% 0.029 259)",
+          "oklch(82% 0.029 259)",
+          "oklch(95% 0.029 259)"
+        ]
+      },
+      "signal": {
+        "role": "primary",
+        "displayName": "Sodium Amber",
+        "canonical": "oklch(82.4% 0.149 73)",
+        "tonalRamp": [
+          "oklch(15% 0.149 73)",
+          "oklch(25% 0.149 73)",
+          "oklch(36% 0.149 73)",
+          "oklch(47% 0.149 73)",
+          "oklch(58% 0.149 73)",
+          "oklch(70% 0.149 73)",
+          "oklch(82% 0.149 73)",
+          "oklch(95% 0.149 73)"
+        ]
+      },
+      "signal-ink": {
+        "role": "primary",
+        "displayName": "Amber Ink",
+        "canonical": "oklch(18.8% 0.032 84)",
+        "tonalRamp": [
+          "oklch(15% 0.032 84)",
+          "oklch(25% 0.032 84)",
+          "oklch(36% 0.032 84)",
+          "oklch(47% 0.032 84)",
+          "oklch(58% 0.032 84)",
+          "oklch(70% 0.032 84)",
+          "oklch(82% 0.032 84)",
+          "oklch(95% 0.032 84)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero and contact headlines only; Archivo bold, wdth 112."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section headings."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Case-study names and scroll-tour steps."
+      },
+      "subtitle": {
+        "displayName": "Subtitle",
+        "purpose": "Station, route-stop, role and small section heads."
+      },
+      "lead": {
+        "displayName": "Lead",
+        "purpose": "The paragraph under each headline, ink-soft, 34-36rem max."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Decision-record and tour prose, 60ch max."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Navigation, footer, register years, route-stop copy."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Stack chips, table headers, load-panel guidance."
+      },
+      "readout": {
+        "displayName": "Readout",
+        "purpose": "Geist Mono labels in the live load panel; scene node labels at 11-12px."
+      },
+      "readout-value": {
+        "displayName": "Readout Value",
+        "purpose": "Geist Mono live figures in the load panel."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "ease-out-expo",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Reveals and the slider thumb."
+      },
+      {
+        "name": "reveal",
+        "value": "opacity + translateY(24px), 0.8s, 75ms stagger capped at 6",
+        "purpose": "Section parts rise in once on entry; skipped under reduced motion and visible without script."
+      },
+      {
+        "name": "press",
+        "value": "background-color/color/transform 200ms, translateY(1px) on active",
+        "purpose": "Primary button hover and press."
+      },
+      {
+        "name": "tour-focus",
+        "value": "opacity/border-color 500ms",
+        "purpose": "Scroll-tour step activation."
+      },
+      {
+        "name": "label-focus",
+        "value": "color 300ms",
+        "purpose": "Scene node labels turning amber when in focus."
+      },
+      {
+        "name": "spine-extend",
+        "value": "scaleY 0 to 1, animation-timeline: view(), range entry 0% to cover 45%",
+        "purpose": "Decision-record spine grows as it scrolls in."
+      },
+      {
+        "name": "scene",
+        "value": "continuous slow particle flow; damped springs for replica scaling; slow orbit with pointer parallax",
+        "purpose": "The live system; a still frame under reduced motion, an SVG graph without WebGL."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      }
+    ],
+    "scene": {
+      "fog": "#0a0c10, near 30, far 90",
+      "ambientLight": "#bfc8d6 at 0.55",
+      "keyLight": "#ffffff at 1.1",
+      "signalLight": "#ffb547 point light over the services tier",
+      "nodeBody": "#141922, metalness 0.35, roughness 0.55",
+      "nodeEdges": "steel #7d8899 linework",
+      "links": "#3a4250 at 0.8 opacity",
+      "grid": "#2a313c centre, #161a21 cells",
+      "particles": "#ffb547"
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The only button: amber, square, for starting a project.",
+      "html": "<a class=\"ds-btn-primary\" href=\"#\">Start a project</a>",
+      "css": ".ds-btn-primary { display: inline-block; font-family: var(--font-archivo), Archivo, sans-serif; background: var(--signal, #ffb547); color: var(--signal-ink, #1a1203); padding: 14px 24px; font-size: 18px; font-weight: 600; text-decoration: none; border-radius: 0; transition: background-color 200ms, color 200ms, transform 200ms; } .ds-btn-primary:hover { background: var(--ink, #e9ecf1); } .ds-btn-primary:active { transform: translateY(1px); } .ds-btn-primary:focus-visible { outline: 2px solid var(--signal, #ffb547); outline-offset: 3px; }"
+    },
+    {
+      "name": "Primary Button, Compact",
+      "kind": "button",
+      "refersTo": "button-primary-compact",
+      "description": "Header-size primary action.",
+      "html": "<a class=\"ds-btn-compact\" href=\"#\">Start a project</a>",
+      "css": ".ds-btn-compact { display: inline-block; font-family: var(--font-archivo), Archivo, sans-serif; background: var(--signal, #ffb547); color: var(--signal-ink, #1a1203); padding: 10px 16px; font-size: 15px; font-weight: 600; text-decoration: none; border-radius: 0; transition: background-color 200ms, transform 200ms; } .ds-btn-compact:hover { background: var(--ink, #e9ecf1); } .ds-btn-compact:active { transform: translateY(1px); } .ds-btn-compact:focus-visible { outline: 2px solid var(--signal, #ffb547); outline-offset: 3px; }"
+    },
+    {
+      "name": "Text Link",
+      "kind": "custom",
+      "refersTo": "lead",
+      "description": "The secondary action: an underlined address, never a second button.",
+      "html": "<a class=\"ds-link\" href=\"#\">hello@example.com</a>",
+      "css": ".ds-link { font-family: var(--font-archivo), Archivo, sans-serif; font-size: 18px; color: var(--ink-soft, #9aa3b2); text-decoration: underline; text-decoration-color: var(--rule-strong, rgba(233,236,241,0.18)); text-decoration-thickness: 1px; text-underline-offset: 0.22em; transition: color 200ms; } .ds-link:hover { color: var(--ink, #e9ecf1); text-decoration-color: var(--signal, #ffb547); } .ds-link:focus-visible { outline: 2px solid var(--signal, #ffb547); outline-offset: 3px; }"
+    },
+    {
+      "name": "Header",
+      "kind": "nav",
+      "refersTo": "nav-header",
+      "description": "Opaque 64px header with a hairline below.",
+      "html": "<header class=\"ds-header\"><a class=\"ds-header-name\" href=\"#\">Ankit Nakarmi</a><nav class=\"ds-header-nav\"><a href=\"#\">Work</a><a href=\"#\">Approach</a><a href=\"#\">Experience</a></nav><a class=\"ds-header-cta\" href=\"#\">Start a project</a></header>",
+      "css": ".ds-header { font-family: var(--font-archivo), Archivo, sans-serif; display: flex; align-items: center; justify-content: space-between; gap: 24px; height: 64px; padding: 0 32px; background: var(--ground, #0a0c10); border-bottom: 1px solid var(--rule, rgba(233,236,241,0.09)); color: var(--ink, #e9ecf1); } .ds-header-name { color: inherit; text-decoration: none; font-size: 17px; font-weight: 700; letter-spacing: -0.025em; font-stretch: 112%; } .ds-header-nav { display: flex; gap: 32px; font-size: 15px; } .ds-header-nav a { color: var(--ink-soft, #9aa3b2); text-decoration: none; transition: color 150ms; } .ds-header-nav a:hover { color: var(--ink, #e9ecf1); } .ds-header-cta { background: var(--signal, #ffb547); color: var(--signal-ink, #1a1203); padding: 10px 16px; font-size: 15px; font-weight: 600; text-decoration: none; transition: background-color 200ms; } .ds-header-cta:hover { background: var(--ink, #e9ecf1); } .ds-header a:focus-visible { outline: 2px solid var(--signal, #ffb547); outline-offset: 3px; }"
+    },
+    {
+      "name": "Stack Chip",
+      "kind": "chip",
+      "refersTo": "chip-stack",
+      "description": "Static outlined tag for a case study's stack.",
+      "html": "<ul class=\"ds-chips\"><li class=\"ds-chip\">Next.js</li><li class=\"ds-chip\">PostgreSQL</li><li class=\"ds-chip\">AWS</li></ul>",
+      "css": ".ds-chips { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 0; } .ds-chip { font-family: var(--font-archivo), Archivo, sans-serif; font-size: 13px; color: var(--ink-soft, #9aa3b2); border: 1px solid var(--rule-strong, rgba(233,236,241,0.18)); padding: 4px 10px; border-radius: 0; }"
+    },
+    {
+      "name": "Load Panel",
+      "kind": "custom",
+      "refersTo": "panel-overlay",
+      "description": "Signature control: simulated load slider with live mono readouts.",
+      "html": "<div class=\"ds-panel\"><div class=\"ds-panel-head\"><label for=\"ds-load\">Simulated load</label><span class=\"ds-panel-x\">6×</span></div><input id=\"ds-load\" class=\"ds-range\" type=\"range\" min=\"1\" max=\"50\" value=\"6\" style=\"--fill: 10%\"><dl class=\"ds-readout\"><div><dt>req/s</dt><dd>120</dd></div><div><dt>services</dt><dd>3</dd></div><div><dt>queue</dt><dd>0</dd></div><div><dt>workers</dt><dd>2</dd></div></dl><p class=\"ds-panel-note\">Drag to push traffic through. Services and workers scale out; the queue takes the bursts.</p></div>",
+      "css": ".ds-panel { font-family: var(--font-archivo), Archivo, sans-serif; width: 22rem; padding: 20px; background: rgba(10,12,16,0.85); border: 1px solid var(--rule-strong, rgba(233,236,241,0.18)); color: var(--ink, #e9ecf1); } .ds-panel-head { display: flex; justify-content: space-between; align-items: baseline; } .ds-panel-head label { font-size: 15px; font-weight: 600; } .ds-panel-x { font-family: var(--font-geist-mono), 'Geist Mono', monospace; font-size: 13px; color: var(--signal, #ffb547); } .ds-range { appearance: none; -webkit-appearance: none; width: 100%; height: 28px; margin-top: 8px; background: transparent; cursor: ew-resize; } .ds-range::-webkit-slider-runnable-track { height: 2px; background: linear-gradient(to right, var(--signal, #ffb547) var(--fill, 0%), var(--rule-strong, rgba(233,236,241,0.18)) var(--fill, 0%)); } .ds-range::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; margin-top: -7px; background: var(--signal, #ffb547); border: 0; transition: transform 200ms cubic-bezier(0.16,1,0.3,1); } .ds-range:active::-webkit-slider-thumb { transform: scale(1.25); } .ds-range::-moz-range-track { height: 2px; background: var(--rule-strong, rgba(233,236,241,0.18)); } .ds-range::-moz-range-progress { height: 2px; background: var(--signal, #ffb547); } .ds-range::-moz-range-thumb { width: 16px; height: 16px; background: var(--signal, #ffb547); border: 0; border-radius: 0; } .ds-range:focus-visible { outline: 2px solid var(--signal, #ffb547); outline-offset: 3px; } .ds-readout { font-family: var(--font-geist-mono), 'Geist Mono', monospace; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 12px 0 0; font-size: 12px; } .ds-readout dt { color: var(--ink-faint, #7c8596); } .ds-readout dd { margin: 2px 0 0; font-size: 15px; color: var(--ink, #e9ecf1); } .ds-panel-note { margin: 12px 0 0; font-size: 13px; line-height: 1.375; color: var(--ink-soft, #9aa3b2); }"
+    },
+    {
+      "name": "Tour Step",
+      "kind": "card",
+      "refersTo": "panel-overlay",
+      "description": "Scroll-tour step over the scene; amber left rule when its nodes are in focus.",
+      "html": "<div class=\"ds-step is-active\"><h3>The gateway</h3><p>Auth, routing and rate limits in one place, so services stay simple.</p><p class=\"ds-step-foot\">API gateway: Auth, routing, rate limits.</p></div><div class=\"ds-step\"><h3>Services</h3><p>Stateless, so they scale out with load.</p></div>",
+      "css": ".ds-step { font-family: var(--font-archivo), Archivo, sans-serif; max-width: 28rem; margin-bottom: 16px; padding: 20px 24px; background: rgba(10,12,16,0.85); border-left: 1px solid var(--rule-strong, rgba(233,236,241,0.18)); opacity: 0.4; color: var(--ink, #e9ecf1); transition: opacity 500ms, border-color 500ms; } .ds-step.is-active { opacity: 1; border-left-color: var(--signal, #ffb547); } .ds-step h3 { margin: 0; font-size: 2rem; line-height: 1.05; font-weight: 700; letter-spacing: -0.03em; font-stretch: 112%; } .ds-step p { margin: 16px 0 0; font-size: 18px; line-height: 1.625; color: var(--ink-soft, #9aa3b2); } .ds-step .ds-step-foot { font-size: 15px; color: var(--ink-faint, #7c8596); }"
+    },
+    {
+      "name": "Decision Record",
+      "kind": "custom",
+      "refersTo": "body",
+      "description": "Stations on a 1px spine with square markers; the last is amber.",
+      "html": "<ol class=\"ds-record\"><li><h4>Context</h4><p>A monolith timing out under seasonal peaks.</p></li><li><h4>Call</h4><p>Queue the writes, scale the readers.</p></li><li class=\"is-last\"><h4>Shipped</h4><p>Peaks absorbed without new hardware.</p></li></ol>",
+      "css": ".ds-record { font-family: var(--font-archivo), Archivo, sans-serif; position: relative; list-style: none; margin: 0; padding: 0; color: var(--ink, #e9ecf1); } .ds-record::before { content: ''; position: absolute; top: 8px; bottom: 8px; left: 5px; width: 1px; background: var(--rule-strong, rgba(233,236,241,0.18)); } .ds-record li { position: relative; padding: 0 0 44px 48px; } .ds-record li:last-child { padding-bottom: 0; } .ds-record li::before { content: ''; position: absolute; top: 0.45rem; left: 0; width: 11px; height: 11px; box-sizing: border-box; border: 1px solid var(--steel, #7d8899); background: var(--ground, #0a0c10); } .ds-record li.is-last::before { border: 0; background: var(--signal, #ffb547); } .ds-record h4 { margin: 0; font-size: 18px; font-weight: 600; } .ds-record p { margin: 6px 0 0; max-width: 60ch; font-size: 18px; line-height: 1.625; color: var(--ink-soft, #9aa3b2); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Running System",
+    "overview": "The page shows the architect's real material instead of a metaphor for it: a live three-dimensional architecture taking simulated traffic in the dark. Everything else is the console around that system. A near-black blue ground, off-white type and cool steel greys carry the structure; fine steel linework draws it; one warm sodium-amber signal marks where traffic flows and where the visitor acts. The register is technical and immersive, in the line of linear.app and the stronger developer portfolios, but the immersion is earned by a system that genuinely responds to load, not by atmosphere.\n\nDensity is low and deliberate. Large expanded Archivo headlines sit on generous section spacing; long-form reading (decision records, the experience register) runs at 18px with relaxed leading. Geist Mono appears only where a machine is speaking: live readouts and diagram labels. Surfaces are flat, corners are square, divisions are 1px low-contrast rules, and the only light in the world comes from the scene.\n\nThe rejected alternatives are on record: the centred SaaS hero and the metaphor-themed portfolio (an earlier transit-map world was discarded for this one).",
+    "keyCharacteristics": [
+      "Near-black blue ground (#0a0c10) with off-white ink and three steps of cool grey.",
+      "One warm signal colour, amber, for traffic and the primary action only.",
+      "Archivo bold at expanded width (wdth 112) for every heading; regular width for body.",
+      "Geist Mono only for live readouts and 3D diagram labels.",
+      "Square corners, 1px low-contrast rules, no shadows, no gradients outside the scene.",
+      "Every simulated number is labelled as simulated."
+    ],
+    "rules": [
+      {
+        "name": "The One Signal Rule",
+        "body": "Amber marks traffic and the primary action, nothing else. There is no second accent: status, availability and decoration use steel or ink. If a new element wants colour, it is either part of the flow or it is grey.",
+        "section": "colors"
+      },
+      {
+        "name": "The Faint Floor Rule",
+        "body": "Ink-faint is the lightest text allowed (#7c8596). Never step below it for small text; 13px copy on ground or raised must hold 4.5:1.",
+        "section": "colors"
+      },
+      {
+        "name": "The Machine Voice Rule",
+        "body": "Geist Mono is used only for live readouts and 3D diagram labels. Headings, navigation, buttons, chips, tables and captions are Archivo. Mono on a human sentence is a defect.",
+        "section": "typography"
+      },
+      {
+        "name": "The Wide Heading Rule",
+        "body": "Every heading from title up is Archivo bold at wdth 112 with negative tracking. Body text is never stretched.",
+        "section": "typography"
+      },
+      {
+        "name": "The No Kicker Rule",
+        "body": "No eyebrow or kicker labels above headings. A heading stands on its own; context goes in the lead paragraph below it.",
+        "section": "typography"
+      },
+      {
+        "name": "The Scene Light Rule",
+        "body": "Light comes only from the scene. No box shadows, glows, gradients or blurred glass on interface elements.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Opaque Header Rule",
+        "body": "The header is solid ground with a 1px hairline below. It never goes translucent over the scene.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** keep amber (#ffb547) to traffic and the primary action; use steel (#7d8899) for status, structure and the availability square.",
+      "**Do** set every heading in Archivo bold at wdth 112 with negative tracking.",
+      "**Do** keep Geist Mono to live readouts and 3D diagram labels.",
+      "**Do** label every simulated figure as simulated, in the control's own title or adjacent copy.",
+      "**Do** divide with 1px rules (rule, or rule-strong where the edge must read) and keep every corner square.",
+      "**Do** reveal section parts once on entry (24px rise, 0.8s, cubic-bezier(0.16, 1, 0.3, 1), 75ms stagger) and leave content visible without script or under reduced motion.",
+      "**Do** keep small text at ink-faint (#7c8596) or brighter."
+    ],
+    "donts": [
+      "**Don't** add a second accent colour, including a green \"available\" dot.",
+      "**Don't** put eyebrow or kicker labels above headings.",
+      "**Don't** use Unicode glyphs as icons (arrows, checkmarks, stars, bullets as decoration). Use inline SVG or nothing.",
+      "**Don't** make the header translucent or blurred.",
+      "**Don't** round corners.",
+      "**Don't** add box shadows, glows, glass blur or decorative gradients; light comes only from the scene.",
+      "**Don't** show an unlabelled metric. Numbers on this site are simulated unless they come from real, cited work.",
+      "**Don't** use mono for headings, navigation, buttons or body copy."
+    ]
+  }
+}
