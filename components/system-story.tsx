@@ -17,6 +17,41 @@ export function SystemStory({ hero, steps }: { hero: ReactNode; steps: Step[] })
   // Without WebGL there is nothing for the load control to drive, so it is not offered.
   const [hasScene, setHasScene] = useState(true);
   const stepEls = useRef<(HTMLElement | null)[]>([]);
+  // Below lg the hero reserves a stage for the system in its own column, so the system and the copy
+  // centre together with equal space above and below. The scene frames the system into that stage.
+  // Portrait desktops have no stage and frame the strip above the copy and the desktop load panel instead.
+  const stageRef = useRef<HTMLDivElement>(null);
+  const copyRef = useRef<HTMLDivElement>(null);
+  const deskPanelRef = useRef<HTMLDivElement>(null);
+  const bandRef = useRef<{ top: number; bottom: number; alignTop?: number } | null>(null);
+
+  useEffect(() => {
+    const shown = (el: HTMLDivElement | null): el is HTMLDivElement => !!el && el.offsetParent !== null;
+    const measure = () => {
+      const stage = stageRef.current;
+      const hero = stepEls.current[0];
+      const copy = copyRef.current;
+      if (shown(stage) && hero && copy) {
+        // When the hero fits the screen, the system's top sits as far under the header as the copy ends above
+        // the screen's bottom edge. When it overflows, the system just centres in its stage.
+        const below = hero.offsetHeight - (copy.offsetTop + copy.offsetHeight);
+        const fits = hero.offsetHeight <= window.innerHeight + 1;
+        bandRef.current = {
+          top: stage.offsetTop,
+          bottom: stage.offsetTop + stage.offsetHeight,
+          alignTop: fits ? 64 + below : undefined,
+        };
+        return;
+      }
+      const tops = [copyRef.current, deskPanelRef.current].filter(shown).map((el) => el.offsetTop);
+      // 64px clears the fixed header; 24px keeps the lowest labels off the headline.
+      if (tops.length) bandRef.current = { top: 64, bottom: Math.min(...tops) - 24 };
+    };
+    const ro = new ResizeObserver(measure);
+    [stepEls.current[0], stageRef.current, copyRef.current, deskPanelRef.current].forEach((el) => el && ro.observe(el));
+    measure();
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     const io = new IntersectionObserver(
@@ -47,7 +82,7 @@ export function SystemStory({ hero, steps }: { hero: ReactNode; steps: Step[] })
   return (
     <div className="relative">
       <div className="sticky top-0 h-svh overflow-hidden">
-        <SystemScene loadRef={loadRef} focusRef={focusRef} onReadout={onReadout} onHover={onHover} onMode={onMode} />
+        <SystemScene loadRef={loadRef} focusRef={focusRef} bandRef={bandRef} onReadout={onReadout} onHover={onHover} onMode={onMode} />
       </div>
 
       <div className="pointer-events-none relative -mt-[100svh]">
@@ -56,14 +91,24 @@ export function SystemStory({ hero, steps }: { hero: ReactNode; steps: Step[] })
             stepEls.current[0] = el;
           }}
           data-step={-1}
-          className="relative flex min-h-svh flex-col justify-end pt-24 lg:pb-14"
+          className="relative flex min-h-svh flex-col pt-16 lg:justify-end lg:pt-24 lg:pb-14"
         >
-          <div className="pointer-events-auto px-4 pb-10 sm:px-8 md:max-w-[52rem] lg:px-14 lg:pb-0 xl:px-20">{hero}</div>
-          <div className="pointer-events-auto absolute bottom-14 hidden w-[22rem] lg:right-14 lg:block xl:right-20">
+          <div className="flex flex-1 flex-col justify-center py-10 lg:flex-none lg:py-0">
+            <div ref={stageRef} aria-hidden className="aspect-[10/3] max-h-[40svh] lg:hidden" />
+            <div ref={copyRef} className="pointer-events-auto mt-8 px-4 sm:px-8 md:max-w-[52rem] lg:mt-0 lg:px-14 xl:px-20">
+              {hero}
+              {/* Tablets have the height to keep the load control on the first screen, under the copy. */}
+              {panel && <div className="mt-10 hidden max-w-[30rem] md:block lg:hidden">{panel}</div>}
+            </div>
+          </div>
+          <div
+            ref={deskPanelRef}
+            className="pointer-events-auto absolute bottom-14 hidden w-[22rem] lg:right-14 lg:block xl:right-20"
+          >
             {panel}
           </div>
         </div>
-        <div className="pointer-events-auto px-4 pb-8 sm:px-8 md:max-w-[30rem] lg:hidden">{panel}</div>
+        <div className="pointer-events-auto px-4 pb-8 sm:px-8 md:hidden">{panel}</div>
 
         <div className="px-4 pt-[24svh] sm:px-8 lg:px-14 xl:px-20">
           <h2 data-reveal className="max-w-[16ch] text-[clamp(2.25rem,4.4vw,3.75rem)] leading-[1] font-bold tracking-[-0.035em] [font-stretch:112%]">

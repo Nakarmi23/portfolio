@@ -36,6 +36,7 @@ export type Readout = { throughput: number; app: number; queue: number; workers:
 export function SystemScene({
   loadRef,
   focusRef,
+  bandRef,
   onReadout,
   onHover,
   onMode,
@@ -43,6 +44,10 @@ export function SystemScene({
   loadRef: RefObject<number>;
   // Nodes the camera should frame; null frames the whole system.
   focusRef: RefObject<NodeId[] | null>;
+  // The strip of screen (px from the scene's top) left free above the page copy. On phones, tablets and
+  // portrait screens the wide shot fills it; landscape desktops keep the system up and to the right instead.
+  // alignTop, when given, is where the top of the system (its highest label) should land instead.
+  bandRef?: RefObject<{ top: number; bottom: number; alignTop?: number } | null>;
   onReadout: (r: Readout) => void;
   onHover: (id: NodeId | null) => void;
   onMode?: (mode: "live" | "still" | "none") => void;
@@ -466,28 +471,64 @@ export function SystemScene({
       let litKey = "";
 
       // Camera framing: a wide shot of the whole system, or a close shot of the focused nodes.
-      const frame = { narrow: false, w: 1, h: 1 };
+      const frame = { narrow: false, banded: false, w: 1, h: 1 };
       const camPos = new THREE.Vector3();
       const camLook = new THREE.Vector3();
       const wantPos = new THREE.Vector3();
       const wantLook = new THREE.Vector3();
+      // Where the shot sits on screen (a view offset in px). It glides with the camera, so moving
+      // between the wide shot and a close shot never jumps.
+      const off = new THREE.Vector2();
+      const wantOff = new THREE.Vector2();
+      // Wide screens keep the system up and to the right of the copy; phones keep it in the top half.
+      const restOff = () => {
+        aimCentre = null;
+        return frame.narrow ? wantOff.set(0, frame.h * 0.16) : wantOff.set(-frame.w * 0.1, frame.h * 0.1);
+      };
+      // The banded wide shot fits the geometry, but what reads as the system's edges are its labels.
+      // placeLabels measures where they land and trims the offset until they centre on aimCentre,
+      // or until the highest label lands on aimTop.
+      let aimCentre: number | null = null;
+      let aimTop: number | null = null;
+      let trim = 0;
       // The wide shot backs off until the system's full width fits the horizontal field of view.
       const viewDir = new THREE.Vector3(0.02, 0.32, 1).normalize();
-      // Phones look down more steeply so the graph's depth fills the height, and let it bleed past the edges.
+      // Tall views look down more steeply so the graph's depth fills the height.
       const steepDir = new THREE.Vector3(0.02, 0.85, 0.75).normalize();
       const wide = () => {
         const halfWidth = 9.5;
-        const vfov = THREE.MathUtils.degToRad(camera.fov);
-        const hfov = 2 * Math.atan(Math.tan(vfov / 2) * camera.aspect);
+        const tan = Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
+        wantLook.set(1.1, -0.4, 0);
+        const band = bandRef?.current;
+        if (frame.banded && band) {
+          // Fit the whole system, clients to database, into the free strip by width and by projected depth.
+          const bottom = Math.max(band.top + 120, Math.min(band.bottom, frame.h));
+          const height = bottom - band.top;
+          // Anything but a short letterbox looks down steeply, so the graph's depth gives it presence.
+          const steep = frame.w / height < 3.6;
+          const halfDepth = steep ? 3.1 : 1.9;
+          const fitWidth = (steep ? 10.6 : halfWidth) / (tan * camera.aspect * (frame.narrow ? 1.04 : 0.94));
+          const fitHeight = halfDepth / (tan * (height / frame.h));
+          const distance = Math.max(fitWidth, fitHeight);
+          // When width is the limit, rest the system just above the copy instead of floating it mid-strip.
+          const halfOnScreen = (halfDepth / (distance * tan)) * (frame.h / 2);
+          aimCentre = Math.max((band.top + bottom) / 2, bottom - halfOnScreen);
+          aimTop = band.alignTop ?? null;
+          wantOff.set(0, frame.h / 2 - aimCentre - trim);
+          wantPos.copy(wantLook).addScaledVector(steep ? steepDir : viewDir, distance);
+          return;
+        }
+        const hfov = 2 * Math.atan(tan * camera.aspect);
         // The desktop view offset spends about a tenth of the width shifting right; give that back.
         const usable = frame.narrow ? 1.18 : 0.86;
         const distance = Math.max(12, (halfWidth / Math.tan((hfov * usable) / 2)) * 1.08);
-        wantLook.set(1.1, -0.4, 0);
+        restOff();
         wantPos.copy(wantLook).addScaledVector(frame.narrow ? steepDir : viewDir, distance);
       };
       const aim = () => {
         const focus = focusRef.current;
         if (!focus || !focus.length) return wide();
+        restOff();
         const centre = new THREE.Vector3();
         focus.forEach((id) => centre.add(at(id)));
         centre.divideScalar(focus.length).applyMatrix4(world.matrixWorld);
@@ -500,12 +541,11 @@ export function SystemScene({
         frame.w = host.clientWidth;
         frame.h = host.clientHeight;
         frame.narrow = frame.w < 768;
+        // Only a landscape desktop has room beside the copy; everything else frames the strip above it.
+        frame.banded = frame.w < 1024 || frame.w / frame.h < 1.2;
         renderer.setSize(frame.w, frame.h, false);
         camera.aspect = frame.w / frame.h;
         camera.fov = frame.narrow ? 46 : 30;
-        // Wide screens keep the system up and to the right of the copy; phones keep it in the top half.
-        if (frame.narrow) camera.setViewOffset(frame.w, frame.h, 0, frame.h * 0.16, frame.w, frame.h);
-        else camera.setViewOffset(frame.w, frame.h, -frame.w * 0.1, frame.h * 0.1, frame.w, frame.h);
         camera.updateProjectionMatrix();
       };
       const ro = new ResizeObserver(resize);
@@ -515,6 +555,7 @@ export function SystemScene({
       aim();
       camPos.copy(wantPos);
       camLook.copy(wantLook);
+      off.copy(wantOff);
 
       const onMove = (e: PointerEvent) => {
         const r = host.getBoundingClientRect();
@@ -579,6 +620,17 @@ export function SystemScene({
           b.el.style.transform = `translate(${(b.x - b.w / 2).toFixed(1)}px, ${(b.below ? b.y : b.y - b.h).toFixed(1)}px)`;
           b.el.style.opacity = b.hidden ? "0" : "";
         }
+        const natural = boxes.filter((b) => !b.hidden).map(rect);
+        if (aimCentre === null || !natural.length) {
+          trim = 0;
+          return;
+        }
+        // The offset is a pure screen shift, so where the labels land at the target offset is known exactly.
+        // A still frame corrects at once; the live orbit eases so the system never twitches with its sway.
+        const top = Math.min(...natural.map((r) => r.t));
+        const [target, seen] = aimTop === null ? [aimCentre, (top + Math.max(...natural.map((r) => r.bt))) / 2] : [aimTop, top];
+        trim += (target - (seen + off.y - wantOff.y)) * (still ? 1 : 0.08);
+        trim = Math.max(-frame.h / 4, Math.min(frame.h / 4, trim));
       };
 
       const paint = () => {
@@ -684,9 +736,11 @@ export function SystemScene({
         const glide = 1 - Math.exp(-dt * 2.4);
         camPos.lerp(wantPos, glide);
         camLook.lerp(wantLook, glide);
+        off.lerp(wantOff, glide);
       };
 
       const render = () => {
+        camera.setViewOffset(frame.w, frame.h, off.x, off.y, frame.w, frame.h);
         camera.position.copy(camPos);
         camera.lookAt(camLook);
         world.updateMatrixWorld();
@@ -754,6 +808,7 @@ export function SystemScene({
           aim();
           camPos.copy(wantPos);
           camLook.copy(wantLook);
+          off.copy(wantOff);
           render();
           publish();
         };
@@ -783,7 +838,7 @@ export function SystemScene({
       disposed = true;
       cleanup();
     };
-  }, [loadRef, focusRef]);
+  }, [loadRef, focusRef, bandRef]);
 
   return (
     <div className="absolute inset-0">
