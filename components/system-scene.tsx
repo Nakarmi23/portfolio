@@ -186,17 +186,25 @@ export function SystemScene({
       const light = (cell: Cell, delay = 0, tint?: T.Color) => schedule.push({ at: clock + delay, cell, tint });
       const idle = new THREE.Color(0x1b2433);
 
-      // Clients: a fanned crowd of devices, many users at once.
+      // Clients: a fanned crowd of devices, many users at once. Each device sends its own requests:
+      // they start inside it and come out of its side along an exit clear of its neighbours (the back
+      // two leave behind the laptop's screen, which hides them until they pass its edge).
+      const devices: { centre: T.Vector3; exit: T.Vector3; half: [number, number, number] }[] = [];
       makeBody(at("clients"), "clients", (add) => {
-        const device = (w: number, h: number, pos: [number, number, number], yaw: number, roll = 0) => {
+        const device = (w: number, h: number, pos: [number, number, number], yaw: number, roll: number, exit: [number, number, number]) => {
           add(new THREE.BoxGeometry(w, h, 0.04), pos, [0, yaw, roll]);
           add(new THREE.PlaneGeometry(w * 0.86, h * 0.86), [pos[0], pos[1], pos[2] + 0.022], [0, yaw, roll], screenMat, false);
+          devices.push({
+            centre: at("clients").add(new THREE.Vector3(...pos)),
+            exit: at("clients").add(new THREE.Vector3(...exit)),
+            half: [Math.abs((w / 2) * Math.cos(yaw)) + 0.03, h / 2 + 0.02, Math.abs((w / 2) * Math.sin(yaw)) + 0.03],
+          });
         };
-        device(0.62, 0.46, [-0.42, 0.02, -0.18], 0.35, 0.04);
+        device(0.62, 0.46, [-0.42, 0.02, -0.18], 0.35, 0.04, [0.95, 0.04, -0.32]);
         add(new THREE.BoxGeometry(0.78, 0.04, 0.5), [0.05, -0.3, 0.12]);
-        device(0.78, 0.5, [0.05, -0.04, -0.12], 0, 0);
-        device(0.22, 0.44, [0.56, -0.08, 0.26], -0.4, -0.05);
-        device(0.2, 0.4, [0.8, -0.1, 0.06], -0.55, 0.06);
+        device(0.78, 0.5, [0.05, -0.04, -0.12], 0, 0, [0.95, 0, -0.3]);
+        device(0.22, 0.44, [0.56, -0.08, 0.26], -0.4, -0.05, [0.95, -0.05, 0.3]);
+        device(0.2, 0.4, [0.8, -0.1, 0.06], -0.55, 0.06, [1.05, -0.08, 0.06]);
       });
 
       const partCells: Cell[] = [];
@@ -387,10 +395,12 @@ export function SystemScene({
       world.add(wires);
       const liveApp = () => appReplicas.filter((r) => r.target > 0.5);
       const liveWorkers = () => workerReplicas.filter((r) => r.target > 0.5);
+      // Where the clients' requests set out from: just right of the crowd, clear of every device.
+      const uplink = at("clients").add(new THREE.Vector3(1.15, 0.05, 0));
       const rebuildWires = () => {
         const pts: number[] = [];
         const link = (a: T.Vector3, b: T.Vector3) => pts.push(a.x, a.y, a.z, b.x, b.y, b.z);
-        link(at("clients"), at("edge"));
+        link(uplink, at("edge"));
         link(at("edge"), at("gateway"));
         for (const r of liveApp()) {
           link(at("gateway"), r.group.position);
@@ -431,6 +441,22 @@ export function SystemScene({
         ),
       );
 
+      // The solids a request disappears into and comes out of, as centre and half extents,
+      // so it reads as passing through a part instead of being drawn across it.
+      const solids: { c: T.Vector3; h: [number, number, number] }[] = [
+        { c: at("edge"), h: [0.46, 0.53, 0.26] },
+        { c: at("gateway"), h: [0.6, 0.18, 0.31] },
+        { c: at("cache").add(new THREE.Vector3(0, -0.12, 0)), h: [0.69, 0.23, 0.08] },
+        { c: at("queue"), h: [1, 0.28, 0.28] },
+        { c: at("db"), h: [0.56, 0.51, 0.56] },
+      ];
+      const within = (x: number, y: number, z: number, c: T.Vector3, hx: number, hy: number, hz: number) =>
+        Math.abs(x - c.x) < hx && Math.abs(y - c.y) < hy && Math.abs(z - c.z) < hz;
+      const inside = (x: number, y: number, z: number) =>
+        solids.some((s) => within(x, y, z, s.c, ...s.h)) ||
+        devices.some((d) => within(x, y, z, d.centre, ...d.half)) ||
+        appReplicas.some((r) => r.scale > 0.3 && within(x, y, z, r.group.position, 0.5 * r.scale, 0.13 * r.scale, 0.33 * r.scale)) ||
+        workerReplicas.some((r) => r.scale > 0.3 && within(x, y, z, r.group.position, 0.36 * r.scale, 0.36 * r.scale, 0.08 * r.scale));
       const jitter = (v: T.Vector3, s = 0.18) =>
         v.clone().add(new THREE.Vector3((Math.random() - 0.5) * s, (Math.random() - 0.5) * s, (Math.random() - 0.5) * s));
       const pick = <X,>(xs: X[]) => xs[Math.floor(Math.random() * xs.length)];
@@ -442,8 +468,13 @@ export function SystemScene({
         if (!p) return;
         const apps = liveApp();
         const app = (apps.length ? pick(apps) : appReplicas[0]).group.position;
-        const route = [jitter(at("clients"), 0.6), jitter(at("edge"), 0.45), jitter(at("gateway")), jitter(app)];
-        const stops: NodeId[] = ["clients", "edge", "gateway", "app"];
+        // Come out of one of the devices, then drift loosely along the path. Where requests converge
+        // they are inside a part, so the scatter never piles up in view.
+        const device = pick(devices);
+        // Scattered across the device's face but never in front of it, so a request is born hidden inside.
+        const born = device.centre.clone().add(new THREE.Vector3((Math.random() - 0.5) * 0.12, (Math.random() - 0.5) * 0.2, 0));
+        const route = [born, jitter(device.exit, 0.12), jitter(at("edge"), 0.45), jitter(at("gateway")), jitter(app)];
+        const stops: NodeId[] = ["clients", "clients", "edge", "gateway", "app"];
         if (Math.random() < 0.62) {
           route.push(jitter(at("cache"), 0.5));
           stops.push("cache");
@@ -720,9 +751,12 @@ export function SystemScene({
           }
           const from = p.route[p.seg];
           const to = p.route[p.seg + 1];
-          positions[i * 3] = from.x + (to.x - from.x) * p.t;
-          positions[i * 3 + 1] = from.y + (to.y - from.y) * p.t;
-          positions[i * 3 + 2] = from.z + (to.z - from.z) * p.t;
+          const x = from.x + (to.x - from.x) * p.t;
+          const y = from.y + (to.y - from.y) * p.t;
+          const z = from.z + (to.z - from.z) * p.t;
+          positions[i * 3] = x;
+          positions[i * 3 + 1] = inside(x, y, z) ? -999 : y;
+          positions[i * 3 + 2] = z;
         }
         pointsGeo.attributes.position.needsUpdate = true;
 
