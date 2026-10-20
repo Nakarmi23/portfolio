@@ -9,6 +9,9 @@ const mailto = `mailto:${person.email}?subject=New%20project`;
 const gutter = "px-4 sm:px-8 lg:px-14 xl:px-20";
 const h2 = "text-[clamp(2.25rem,4.4vw,3.75rem)] leading-[1] font-bold tracking-[-0.035em] [font-stretch:112%]";
 const sections = ["work", "approach", "experience", "contact"];
+const lead = "text-lg leading-snug text-ink-soft sm:text-xl";
+// Widens a small text link's hit area to 44px for touch without moving the layout.
+const hit = "-my-3 inline-block py-3";
 
 const press = "transition-[background-color,color,transform] duration-200 active:translate-y-[1px]";
 
@@ -19,15 +22,15 @@ export default function Home() {
       <HashSync ids={sections} />
       <header className="fixed inset-x-0 top-0 z-30 border-b border-rule bg-ground">
         <div className={`flex h-16 items-center justify-between gap-6 ${gutter}`}>
-          <a href="#top" className="text-[17px] font-bold tracking-tight [font-stretch:112%]">
+          <a href="#top" className={`text-[17px] font-bold tracking-tight [font-stretch:112%] ${hit}`}>
             {person.name}
           </a>
           <nav aria-label="Sections" className="hidden items-center gap-8 text-[15px] text-ink-soft md:flex">
-            <a href="#work" className="transition-colors hover:text-ink">Work</a>
-            <a href="#approach" className="transition-colors hover:text-ink">Approach</a>
-            <a href="#experience" className="transition-colors hover:text-ink">Experience</a>
+            <a href="#work" className={`transition-colors hover:text-ink ${hit}`}>Work</a>
+            <a href="#approach" className={`transition-colors hover:text-ink ${hit}`}>Approach</a>
+            <a href="#experience" className={`transition-colors hover:text-ink ${hit}`}>Experience</a>
           </nav>
-          <a href={mailto} className={`bg-signal px-4 py-2.5 text-[15px] font-semibold text-signal-ink hover:bg-ink ${press}`}>
+          <a href={mailto} className={`bg-signal px-4 py-[11px] text-[15px] font-semibold text-signal-ink hover:bg-ink ${press}`}>
             Start a project
           </a>
         </div>
@@ -41,11 +44,11 @@ export default function Home() {
               <h1
                 id="hero-title"
                 data-reveal
-                className="text-[clamp(2.75rem,5.6vw,5.25rem)] leading-[0.94] font-bold tracking-[-0.045em] text-balance [font-stretch:112%]"
+                className="text-[clamp(2.25rem,11.3vw,2.75rem)] leading-[0.94] font-bold tracking-[-0.045em] text-balance [font-stretch:112%] sm:text-[clamp(2.75rem,7.6vw,4.25rem)] lg:text-[clamp(2.75rem,5.6vw,5.25rem)]"
               >
                 I build software that holds up.
               </h1>
-              <p data-reveal className="mt-6 max-w-[34rem] text-xl leading-snug text-ink-soft">
+              <p data-reveal className={`mt-6 max-w-[34rem] ${lead}`}>
                 Software engineer with 10+ years of shipping, front end to database. I think the system through
                 before I write it, so what you launch keeps working as traffic and features grow.
               </p>
@@ -63,12 +66,12 @@ export default function Home() {
           }
         />
 
-        <section id="work" aria-labelledby="work-title" className="relative bg-ground pt-36">
+        <section id="work" aria-labelledby="work-title" className="relative bg-ground pt-24 md:pt-36">
           <div className={`grid gap-6 lg:grid-cols-12 ${gutter}`}>
             <h2 data-reveal id="work-title" className={`${h2} lg:col-span-5`}>
               Selected work
             </h2>
-            <p data-reveal className="max-w-[36rem] text-xl leading-snug text-ink-soft lg:col-span-6 lg:col-start-7">
+            <p data-reveal className={`max-w-[36rem] lg:col-span-6 lg:col-start-7 ${lead}`}>
               What I built, and the calls that made it hold up: the context, the constraint, the decision, and what
               shipped.
             </p>
@@ -79,7 +82,7 @@ export default function Home() {
               key={line.id}
               id={`work-${line.id}`}
               aria-labelledby={`work-${line.id}-title`}
-              className={`mt-28 grid gap-12 border-t border-rule pt-14 lg:grid-cols-12 ${gutter}`}
+              className={`mt-20 grid gap-10 border-t border-rule pt-12 md:mt-28 md:gap-12 md:pt-14 lg:grid-cols-12 ${gutter}`}
             >
               <div className="lg:col-span-5">
                 <div className="lg:sticky lg:top-28">
@@ -120,18 +123,18 @@ export default function Home() {
           ))}
         </section>
 
-        <section id="approach" aria-labelledby="approach-title" className={`pt-44 ${gutter}`}>
+        <section id="approach" aria-labelledby="approach-title" className={`pt-28 md:pt-44 ${gutter}`}>
           <div className="grid gap-6 lg:grid-cols-12">
             <h2 data-reveal id="approach-title" className={`${h2} lg:col-span-5`}>
               One person, end to end
             </h2>
-            <p data-reveal className="max-w-[36rem] text-xl leading-snug text-ink-soft lg:col-span-6 lg:col-start-7">
+            <p data-reveal className={`max-w-[36rem] lg:col-span-6 lg:col-start-7 ${lead}`}>
               You work with one engineer from the first call to the production deploy. I plan just enough to build it
               right, then write the code myself, so nothing is lost in a hand-off.
             </p>
           </div>
 
-          <ol className="mt-20 grid border-t border-rule md:grid-cols-3 xl:grid-cols-6">
+          <ol className="mt-14 grid border-t border-rule md:mt-20 md:grid-cols-3 xl:grid-cols-6">
             {route.map((stop, i) => (
               <li
                 data-reveal
@@ -151,20 +154,20 @@ export default function Home() {
           </ol>
         </section>
 
-        <section id="experience" aria-labelledby="experience-title" className={`pt-44 pb-44 ${gutter}`}>
+        <section id="experience" aria-labelledby="experience-title" className={`pt-28 pb-28 md:pt-44 md:pb-44 ${gutter}`}>
           <div className="grid gap-6 lg:grid-cols-12">
             <h2 data-reveal id="experience-title" className={`${h2} lg:col-span-5`}>
               Experience
             </h2>
-            <p data-reveal className="max-w-[36rem] text-xl leading-snug text-ink-soft lg:col-span-6 lg:col-start-7">
+            <p data-reveal className={`max-w-[36rem] lg:col-span-6 lg:col-start-7 ${lead}`}>
               Where I&rsquo;ve worked, and the role I held at each.
             </p>
           </div>
 
-          <table data-reveal className="mt-16 w-full border-collapse text-left">
+          <table data-reveal className="mt-12 w-full border-collapse text-left md:mt-16">
             <thead>
               <tr className="border-b border-rule-strong text-[13px] text-ink-faint">
-                <th scope="col" className="py-3 pr-6 font-normal">Years</th>
+                <th scope="col" className="hidden py-3 pr-6 font-normal sm:table-cell">Years</th>
                 <th scope="col" className="py-3 pr-6 font-normal">Role</th>
                 <th scope="col" className="hidden py-3 font-normal sm:table-cell">Organisation</th>
               </tr>
@@ -172,8 +175,10 @@ export default function Home() {
             <tbody>
               {register.map((row) => (
                 <tr key={row.years + row.role} className="border-b border-rule align-top transition-colors hover:bg-raised">
-                  <td className="py-5 pr-6 text-[15px] whitespace-nowrap text-ink-soft">{row.years}</td>
-                  <td className="py-5 pr-6">
+                  <td className="hidden py-5 pr-6 text-[15px] whitespace-nowrap text-ink-soft sm:table-cell">{row.years}</td>
+                  <td className="py-5 sm:pr-6">
+                    {/* On phones the years ride above the role instead of taking a column. */}
+                    <span className="mb-1 block text-[15px] text-ink-soft sm:hidden">{row.years}</span>
                     <span className="block text-lg font-semibold">{row.role}</span>
                     <span className="block text-ink-soft sm:hidden">{row.org}</span>
                     {row.note && <span className="block text-sm text-ink-faint sm:hidden">{row.note}</span>}
@@ -189,7 +194,7 @@ export default function Home() {
         </section>
 
         <section id="contact" aria-labelledby="contact-title" className="border-t border-rule bg-raised">
-          <div className={`grid gap-16 pt-32 pb-28 lg:grid-cols-12 ${gutter}`}>
+          <div className={`grid gap-16 pt-24 pb-20 md:pt-32 md:pb-28 lg:grid-cols-12 ${gutter}`}>
             <div className="lg:col-span-7">
               <h2
                 data-reveal
@@ -198,7 +203,7 @@ export default function Home() {
               >
                 What are you building?
               </h2>
-              <p data-reveal className="mt-6 max-w-[34rem] text-xl leading-snug text-ink-soft">
+              <p data-reveal className={`mt-6 max-w-[34rem] ${lead}`}>
                 Tell me what you need built. I&rsquo;ll reply with how I&rsquo;d approach it.
               </p>
               <a
@@ -233,7 +238,7 @@ export default function Home() {
               {profileLinks.map((link) => (
                 <li key={link.label}>
                   {link.href ? (
-                    <a href={link.href} className="transition-colors hover:text-ink">{link.label}</a>
+                    <a href={link.href} className={`transition-colors hover:text-ink ${hit}`}>{link.label}</a>
                   ) : (
                     <span>{link.label} [add URL]</span>
                   )}

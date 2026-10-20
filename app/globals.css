@@ -97,6 +97,14 @@ a {
   height: 28px;
   background: transparent;
   cursor: ew-resize;
+  /* A vertical swipe across the control still scrolls the page. */
+  touch-action: pan-y;
+}
+
+@media (pointer: coarse) {
+  .load-range {
+    height: 44px;
+  }
 }
 
 .load-range::-webkit-slider-runnable-track {

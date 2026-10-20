@@ -69,7 +69,7 @@ export function SystemStory({ hero, steps }: { hero: ReactNode; steps: Step[] })
           <h2 data-reveal className="max-w-[16ch] text-[clamp(2.25rem,4.4vw,3.75rem)] leading-[1] font-bold tracking-[-0.035em] [font-stretch:112%]">
             Every layer of the system
           </h2>
-          <p data-reveal className="mt-5 max-w-[30rem] text-xl leading-snug text-ink-soft">
+          <p data-reveal className="mt-5 max-w-[30rem] text-lg leading-snug text-ink-soft sm:text-xl">
             Follow a request from the browser to the database. I design and build each layer it passes through.
           </p>
         </div>
@@ -82,7 +82,7 @@ export function SystemStory({ hero, steps }: { hero: ReactNode; steps: Step[] })
                 stepEls.current[i + 1] = el;
               }}
               data-step={i}
-              className="flex min-h-[80svh] items-center px-4 sm:px-8 lg:px-14 xl:px-20"
+              className="flex min-h-[80svh] items-end px-4 pb-[6svh] sm:px-8 lg:items-center lg:px-14 lg:pb-0 xl:px-20"
             >
               <div
                 className={`pointer-events-auto max-w-[28rem] border-l bg-ground/85 py-5 pr-6 pl-6 transition-[opacity,border-color] duration-500 ${
@@ -92,7 +92,7 @@ export function SystemStory({ hero, steps }: { hero: ReactNode; steps: Step[] })
                 <h3 className="text-[clamp(1.75rem,2.6vw,2.5rem)] leading-[1.05] font-bold tracking-[-0.03em] [font-stretch:112%]">
                   {s.name}
                 </h3>
-                <p className="mt-4 text-lg leading-relaxed text-ink-soft">{s.detail}</p>
+                <p className="mt-4 text-base leading-relaxed text-ink-soft sm:text-lg">{s.detail}</p>
                 <p className="mt-4 text-[15px] leading-relaxed text-ink-faint">
                   {s.nodes
                     ? s.nodes
