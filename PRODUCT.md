@@ -24,7 +24,7 @@ A personal portfolio for a **Full Stack Software Engineer and Solutions Architec
 
 Ankit works across both levels: hands-on full-stack engineering and solutions architecture (system design, technical decisions, trade-offs). The case studies should show both the shipped product and the architectural reasoning behind it.
 
-**Angle (confirmed 2026-10-20):** the site is mainly for **freelance work**. The thing to remember combines two ideas: *an architect who ships*, meaning one person who designs the system and builds it, and *scale and reliability*, meaning systems built to hold up under load. Copy may state this angle, but specific claims about scale (numbers, uptime, traffic) need real evidence from Ankit.
+**Angle (revised 2026-10-20):** the site is mainly for **freelance work**, and clients come looking for someone who can **build**. Lead with the builder: a software engineer who ships, front end to database. Use "software engineer", not "full-stack engineer", as the title. The architecture experience is the differentiator, not the headline: *he thinks it through first, so what he builds holds up* under load and as the product grows. Don't open with the solutions-architect title; the experience table carries it as proof. Copy may state this angle, but specific claims about scale (numbers, uptime, traffic) need real evidence from Ankit.
 
 **Tone guardrails:** not a generic SaaS hero, not playful, not corporate or consultancy-speak.
 

@@ -14,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ankit Nakarmi — Solutions Architect",
+  title: "Ankit Nakarmi — Software engineer",
   description:
-    "Solutions architect with 10+ years as a software engineer. I design systems that hold up under load, then build and ship them.",
+    "Software engineer with 10+ years of shipping, front end to database. I think the system through first, so what I build keeps working as you grow.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -1,6 +1,6 @@
 ---
 name: Ankit Nakarmi
-description: Freelance solutions architect who builds what he designs, shown as a live system running under simulated load.
+description: Freelance software engineer who thinks the system through before building it, shown as a live system running under simulated load.
 colors:
   ground: "#0a0c10"
   raised: "#11141a"

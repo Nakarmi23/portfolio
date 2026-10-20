@@ -42,11 +42,11 @@ export default function Home() {
                 data-reveal
                 className="text-[clamp(2.75rem,5.6vw,5.25rem)] leading-[0.94] font-bold tracking-[-0.045em] text-balance [font-stretch:112%]"
               >
-                The architect who still ships.
+                I build software that holds up.
               </h1>
               <p data-reveal className="mt-6 max-w-[34rem] text-xl leading-snug text-ink-soft">
-                I&rsquo;m currently working as a solutions architect, with 10+ years as a software engineer. I design
-                systems that hold up under load, then build and ship them myself, with no hand-off in between.
+                Software engineer with 10+ years of shipping, front end to database. I think the system through
+                before I write it, so what you launch keeps working as traffic and features grow.
               </p>
               <div data-reveal className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
                 <a href={mailto} className={`bg-signal px-6 py-3.5 text-lg font-semibold text-signal-ink hover:bg-ink ${press}`}>
@@ -70,8 +70,8 @@ export default function Home() {
               Selected work
             </h2>
             <p data-reveal className="max-w-[36rem] text-xl leading-snug text-ink-soft lg:col-span-6 lg:col-start-7">
-              Each project is written as a decision record: the context, the constraint, the call I made, and what it
-              cost. The architecture is the part worth reading.
+              What I built, and the calls that made it hold up: the context, the constraint, the decision, and what
+              shipped.
             </p>
           </div>
 
@@ -127,8 +127,8 @@ export default function Home() {
               One person, end to end
             </h2>
             <p data-reveal className="max-w-[36rem] text-xl leading-snug text-ink-soft lg:col-span-6 lg:col-start-7">
-              Every engagement runs the same path, from the first diagram to the production deploy. The person who
-              drew the architecture is the one who ships it, so nothing is lost in translation.
+              You work with one engineer from the first call to the production deploy. I plan just enough to build it
+              right, then write the code myself, so nothing is lost in a hand-off.
             </p>
           </div>
 
@@ -200,7 +200,7 @@ export default function Home() {
                 What are you building?
               </h2>
               <p data-reveal className="mt-6 max-w-[34rem] text-xl leading-snug text-ink-soft">
-                Tell me where it&rsquo;s straining. I&rsquo;ll reply with how I&rsquo;d approach it.
+                Tell me what you need built. I&rsquo;ll reply with how I&rsquo;d approach it.
               </p>
               <a
                 data-reveal

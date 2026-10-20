@@ -7,7 +7,7 @@ related_targets: []
 
 # Landing page (/)
 
-Mode: Persuade. Primary visitor: a prospective freelance client (founder, agency, product lead) arriving from LinkedIn, GitHub or a referral, usually on a laptop. Job: within seconds, understand that Ankit designs systems that hold up under load and builds them himself, then start an engagement by email. Secondary: recruiters and peers.
+Mode: Persuade. Primary visitor: a prospective freelance client (founder, agency, product lead) arriving from LinkedIn, GitHub or a referral, usually on a laptop. Job: within seconds, understand that Ankit builds the whole product himself, and thinks the system through first so it holds up under load, then start an engagement by email. Secondary: recruiters and peers.
 
 Proof: case studies (placeholders until Ankit supplies content), work history, contact links. No metrics, logos or testimonials exist. Anything the hero simulates is labelled as a simulation.
 
