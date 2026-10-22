@@ -90,6 +90,21 @@ a {
   }
 }
 
+/* A running experiment's time drains along the top rule of its card. */
+@keyframes probe-run {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+.probe-run {
+  transform-origin: left;
+  animation: probe-run linear forwards;
+}
+
 /* The load control: a fine track with a square amber thumb. */
 .load-range {
   appearance: none;

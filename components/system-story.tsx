@@ -1,21 +1,40 @@
 "use client";
 
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from "react";
-import { NODES, SystemScene, type NodeId, type Readout } from "@/components/system-scene";
+import { INITIAL_READOUT, NODES, SystemScene, type Experiment, type NodeId, type Readout } from "@/components/system-scene";
+import type { Capability } from "@/content/site";
 
-type Step = { name: string; detail: string; nodes: NodeId[] | null };
+// How long each experiment runs, in seconds, matching the simulation.
+const DURATION: Record<Experiment, number> = { spike: 5, region: 6, flood: 5, kill: 3, flush: 7 };
+
+// The live figures each experiment is watched through.
+const GAUGES: Record<Experiment, (r: Readout) => [string, number | string][]> = {
+  spike: (r) => [["req/s", r.throughput], ["services", r.app], ["workers", r.workers]],
+  region: (r) => [["EU req/s", r.regions[0]], ["US req/s", r.regions[1]], ["AP req/s", r.regions[2]]],
+  flood: (r) => [["allowed/s", r.allowed], ["rejected/s", r.rejected], ["services", r.app]],
+  kill: (r) => [["services", r.app], ["queue", r.queue], ["req/s", r.throughput]],
+  flush: (r) => [["cache hits", `${r.hitRate}%`], ["db reads/s", r.dbReads], ["req/s", r.throughput]],
+};
+
+const clockTime = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
 // The live system stays pinned while the page walks the request path past it.
 // Each step tells the camera which part of the system to frame.
-export function SystemStory({ hero, steps }: { hero: ReactNode; steps: Step[] }) {
+export function SystemStory({ hero, steps }: { hero: ReactNode; steps: Capability[] }) {
   const loadRef = useRef(10);
   const focusRef = useRef<NodeId[] | null>(null);
   const [load, setLoad] = useState(10);
-  const [readout, setReadout] = useState<Readout>({ throughput: 200, app: 3, queue: 0, workers: 1 });
+  const [readout, setReadout] = useState<Readout>(INITIAL_READOUT);
   const [hovered, setHovered] = useState<NodeId | null>(null);
   const [active, setActive] = useState(-1);
   // Without WebGL there is nothing for the load control to drive, so it is not offered.
   const [hasScene, setHasScene] = useState(true);
+  // Experiments need the simulation running live; a still frame or the flat diagram can't show them.
+  const [live, setLive] = useState(false);
+  const commandRef = useRef<((e: Experiment) => void) | null>(null);
+  const [running, setRunning] = useState<Experiment | null>(null);
+  const [runs, setRuns] = useState(0);
+  const runTimer = useRef(0);
   const stepEls = useRef<(HTMLElement | null)[]>([]);
   // Below lg the hero reserves a stage for the system in its own column, so the system and the copy
   // centre together with equal space above and below. The scene frames the system into that stage.
@@ -71,7 +90,18 @@ export function SystemStory({ hero, steps }: { hero: ReactNode; steps: Step[] })
 
   const onReadout = useCallback((r: Readout) => setReadout(r), []);
   const onHover = useCallback((id: NodeId | null) => setHovered(id), []);
-  const onMode = useCallback((m: "live" | "still" | "none") => setHasScene(m !== "none"), []);
+  const onMode = useCallback((m: "live" | "still" | "none") => {
+    setHasScene(m !== "none");
+    setLive(m === "live");
+  }, []);
+  useEffect(() => () => window.clearTimeout(runTimer.current), []);
+  const runExperiment = (id: Experiment) => {
+    commandRef.current?.(id);
+    setRuns((n) => n + 1);
+    setRunning(id);
+    window.clearTimeout(runTimer.current);
+    runTimer.current = window.setTimeout(() => setRunning(null), DURATION[id] * 1000);
+  };
   const changeLoad = (v: number) => {
     loadRef.current = v;
     setLoad(v);
@@ -82,7 +112,7 @@ export function SystemStory({ hero, steps }: { hero: ReactNode; steps: Step[] })
   return (
     <div className="relative">
       <div className="sticky top-0 h-svh overflow-hidden">
-        <SystemScene loadRef={loadRef} focusRef={focusRef} bandRef={bandRef} onReadout={onReadout} onHover={onHover} onMode={onMode} />
+        <SystemScene loadRef={loadRef} focusRef={focusRef} bandRef={bandRef} commandRef={commandRef} onReadout={onReadout} onHover={onHover} onMode={onMode} />
       </div>
 
       <div className="pointer-events-none relative -mt-[100svh]">
@@ -115,7 +145,8 @@ export function SystemStory({ hero, steps }: { hero: ReactNode; steps: Step[] })
             Every layer of the system
           </h2>
           <p data-reveal className="mt-5 max-w-[30rem] text-lg leading-snug text-ink-soft sm:text-xl">
-            Follow a request from the browser to the database. I design and build each layer it passes through.
+            Follow a request from the browser to the database. I design and build each layer it passes through. At
+            each one, break something in the simulation and watch the layer hold.
           </p>
         </div>
 
@@ -130,7 +161,7 @@ export function SystemStory({ hero, steps }: { hero: ReactNode; steps: Step[] })
               className="flex min-h-[80svh] items-end px-4 pb-[6svh] sm:px-8 lg:items-center lg:px-14 lg:pb-0 xl:px-20"
             >
               <div
-                className={`pointer-events-auto max-w-[28rem] border-l bg-ground/85 py-5 pr-6 pl-6 transition-[opacity,border-color] duration-500 ${
+                className={`pointer-events-auto w-full max-w-[30rem] border-l bg-ground/85 py-5 pr-6 pl-6 transition-[opacity,border-color] duration-500 ${
                   active === i ? "border-signal opacity-100" : "border-rule-strong opacity-40"
                 }`}
               >
@@ -138,7 +169,8 @@ export function SystemStory({ hero, steps }: { hero: ReactNode; steps: Step[] })
                   {s.name}
                 </h3>
                 <p className="mt-4 text-base leading-relaxed text-ink-soft sm:text-lg">{s.detail}</p>
-                <p className="mt-4 text-[15px] leading-relaxed text-ink-faint">
+                {/* On phones the experiment explains the layer, so the role footnote steps aside to keep the scene in view. */}
+                <p className={`mt-4 text-[15px] leading-relaxed text-ink-faint ${live ? "hidden sm:block" : ""}`}>
                   {s.nodes
                     ? s.nodes
                         .map((id) => NODES.find((n) => n.id === id)!)
@@ -146,6 +178,15 @@ export function SystemStory({ hero, steps }: { hero: ReactNode; steps: Step[] })
                         .join(" ")
                     : "Every part above, monitored and documented."}
                 </p>
+                {live && (
+                  <Probe
+                    experiment={s.experiment}
+                    readout={readout}
+                    runs={runs}
+                    running={running}
+                    onRun={runExperiment}
+                  />
+                )}
               </div>
             </li>
           ))}
@@ -206,7 +247,65 @@ function LoadPanel({
   );
 }
 
-function Stat({ label, value }: { label: string; value: number }) {
+// One experiment on one layer: the action, what to watch for, and the live figures that show it.
+// The last layer has no fault to set off and shows what monitoring would report for the visit instead.
+function Probe({
+  experiment,
+  readout,
+  runs,
+  running,
+  onRun,
+}: {
+  experiment: Capability["experiment"];
+  readout: Readout;
+  runs: number;
+  running: Experiment | null;
+  onRun: (id: Experiment) => void;
+}) {
+  const busy = !!experiment && running === experiment.id;
+  const gauges: [string, number | string][] = experiment
+    ? GAUGES[experiment.id](readout)
+    : [
+        ["served", readout.served.toLocaleString("en")],
+        ["experiments", runs],
+        ["running for", clockTime(readout.elapsed)],
+      ];
+  return (
+    <div className="relative mt-5 border-t border-rule pt-5">
+      {busy && (
+        <span
+          key={runs}
+          aria-hidden
+          className="probe-run absolute -top-px left-0 h-px w-full bg-signal"
+          style={{ animationDuration: `${DURATION[experiment.id]}s` }}
+        />
+      )}
+      {experiment ? (
+        <>
+          <button
+            type="button"
+            onClick={() => onRun(experiment.id)}
+            disabled={busy}
+            className="inline-flex items-center gap-3 border border-rule-strong px-4 py-2.5 text-[15px] font-semibold transition-[border-color,transform] duration-200 not-disabled:hover:border-ink not-disabled:active:translate-y-[1px] disabled:cursor-default"
+          >
+            <span aria-hidden className={`size-[11px] ${busy ? "bg-signal" : "border border-steel"}`} />
+            <span aria-live="polite">{busy ? "Running" : experiment.action}</span>
+          </button>
+          <p className="mt-3 text-[15px] leading-relaxed text-ink-soft">{experiment.effect}</p>
+        </>
+      ) : (
+        <p className="text-[15px] leading-relaxed text-ink-soft">What monitoring would report for your visit so far.</p>
+      )}
+      <dl className="mt-4 grid grid-cols-3 gap-3 font-mono text-[12px]">
+        {gauges.map(([label, value]) => (
+          <Stat key={label} label={label} value={value} />
+        ))}
+      </dl>
+    </div>
+  );
+}
+
+function Stat({ label, value }: { label: string; value: number | string }) {
   return (
     <div>
       <dt className="text-ink-faint">{label}</dt>

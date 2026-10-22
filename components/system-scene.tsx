@@ -31,12 +31,46 @@ const MAX_PARTICLES = 1400;
 const MAX_APP = 10;
 const MAX_WORKERS = 6;
 
-export type Readout = { throughput: number; app: number; queue: number; workers: number };
+export type Readout = {
+  throughput: number;
+  app: number;
+  queue: number;
+  workers: number;
+  // Requests per second each edge region (EU, US, AP) is serving.
+  regions: number[];
+  // Requests per second the gateway lets through, and turns away at the rate limit.
+  allowed: number;
+  rejected: number;
+  // Share of cache reads that hit, as a percentage, and the reads that fall through to the database.
+  hitRate: number;
+  dbReads: number;
+  // Requests served and seconds the system has run since the visitor arrived.
+  served: number;
+  elapsed: number;
+};
+
+export const INITIAL_READOUT: Readout = {
+  throughput: 200,
+  app: 3,
+  queue: 0,
+  workers: 1,
+  regions: [0, 0, 0],
+  allowed: 0,
+  rejected: 0,
+  hitRate: 75,
+  dbReads: 0,
+  served: 0,
+  elapsed: 0,
+};
+
+// Faults and surges the visitor can set off, one per layer, to watch that layer do its job.
+export type Experiment = "spike" | "region" | "flood" | "kill" | "flush";
 
 export function SystemScene({
   loadRef,
   focusRef,
   bandRef,
+  commandRef,
   onReadout,
   onHover,
   onMode,
@@ -48,6 +82,8 @@ export function SystemScene({
   // portrait screens the wide shot fills it; landscape desktops keep the system up and to the right instead.
   // alignTop, when given, is where the top of the system (its highest label) should land instead.
   bandRef?: RefObject<{ top: number; bottom: number; alignTop?: number } | null>;
+  // Filled in while the simulation runs live, so the page can set off an experiment.
+  commandRef?: RefObject<((e: Experiment) => void) | null>;
   onReadout: (r: Readout) => void;
   onHover: (id: NodeId | null) => void;
   onMode?: (mode: "live" | "still" | "none") => void;
@@ -55,7 +91,7 @@ export function SystemScene({
   const mount = useRef<HTMLDivElement>(null);
   const labels = useRef<Partial<Record<NodeId, HTMLDivElement | null>>>({});
   const callbacks = useRef({ onReadout, onHover, onMode });
-  const [readout, setReadout] = useState<Readout>({ throughput: 200, app: 3, queue: 0, workers: 1 });
+  const [readout, setReadout] = useState<Readout>(INITIAL_READOUT);
   const [lit, setLit] = useState<NodeId[]>([]);
   const [hover, setHoverState] = useState<NodeId | null>(null);
   const [mode, setMode] = useState<"pending" | "live" | "still" | "none">("pending");
@@ -231,6 +267,7 @@ export function SystemScene({
       // Edge: a CDN rack, a small cabinet of regional servers. The region that serves
       // a request lights.
       const regions: Cell[] = [];
+      const regionFaces: T.MeshBasicMaterial[] = [];
       makeBody(at("edge"), "edge", (add) => {
         for (const x of [-0.43, 0.43]) add(new THREE.BoxGeometry(0.05, 1.0, 0.52), [x, 0, 0]);
         for (const y of [-0.5, 0.5]) add(new THREE.BoxGeometry(0.91, 0.05, 0.52), [0, y, 0]);
@@ -248,9 +285,17 @@ export function SystemScene({
           const mat = lit();
           const led = add(new THREE.BoxGeometry(0.05, 0.05, 0.02), [0.3, y, 0.24], [0, 0, 0], mat, false);
           regions.push(cell(mat, (h) => led.scale.setScalar(1 + h * 0.6)));
+          regionFaces.push(face);
         }
       });
-      const edgeHit = () => light(pick(regions));
+      // The region that serves a request is any one still online.
+      const dark = new THREE.Color(0x0d1014);
+      const edgeServe = () => {
+        const up = [0, 1, 2].filter((i) => i !== sim.down);
+        const i = pick(up);
+        counts.regions[i] += 1;
+        if (lights()) light(regions[i]);
+      };
 
       // API gateway: a router with a routing table on a small screen. The route each
       // request takes highlights.
@@ -288,6 +333,7 @@ export function SystemScene({
         rows.push(cell(mat, (h) => badge.scale.setScalar(1 + h * 0.25)));
       });
       const status = rows.pop()!;
+      const searchRow = rows[2];
       const gatewayHit = () => {
         light(status);
         light(pick(rows), 0.08);
@@ -417,8 +463,9 @@ export function SystemScene({
       rebuildWires();
 
       // Requests: amber points travelling along a route of waypoints.
-      type Particle = { route: T.Vector3[]; stops: NodeId[]; seg: number; t: number; speed: number; alive: boolean };
-      const particles: Particle[] = Array.from({ length: MAX_PARTICLES }, () => ({ route: [], stops: [], seg: 0, t: 0, speed: 1, alive: false }));
+      // A bot's request goes no further than the gateway, which turns it away at the rate limit.
+      type Particle = { route: T.Vector3[]; stops: NodeId[]; seg: number; t: number; speed: number; alive: boolean; bot: boolean };
+      const particles: Particle[] = Array.from({ length: MAX_PARTICLES }, () => ({ route: [], stops: [], seg: 0, t: 0, speed: 1, alive: false, bot: false }));
       const positions = new Float32Array(MAX_PARTICLES * 3).fill(-999);
       const pointsGeo = new THREE.BufferGeometry();
       pointsGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
@@ -461,7 +508,7 @@ export function SystemScene({
         v.clone().add(new THREE.Vector3((Math.random() - 0.5) * s, (Math.random() - 0.5) * s, (Math.random() - 0.5) * s));
       const pick = <X,>(xs: X[]) => xs[Math.floor(Math.random() * xs.length)];
       // Only a share of arrivals light up, and that share grows with load, so light reads as busyness.
-      const lights = () => Math.random() < 0.15 + (loadRef.current ?? 10) * 0.017;
+      const lights = () => Math.random() < 0.15 + load() * 0.017;
 
       const spawn = (midFlight = false) => {
         const p = particles.find((x) => !x.alive);
@@ -478,9 +525,10 @@ export function SystemScene({
         if (Math.random() < 0.62) {
           route.push(jitter(at("cache"), 0.5));
           stops.push("cache");
-          if (Math.random() < 0.25) {
+          if (Math.random() < 0.25 + 0.75 * sim.flush) {
             route.push(jitter(at("db")));
             stops.push("db");
+            counts.db += 1;
           }
         } else {
           const ws = liveWorkers();
@@ -493,9 +541,64 @@ export function SystemScene({
         p.t = midFlight ? Math.random() : 0;
         p.speed = 1.6 + Math.random() * 0.9;
         p.alive = true;
+        p.bot = false;
+      };
+      const spawnBot = () => {
+        const p = particles.find((x) => !x.alive);
+        if (!p) return;
+        const device = pick(devices);
+        const born = device.centre.clone().add(new THREE.Vector3((Math.random() - 0.5) * 0.12, (Math.random() - 0.5) * 0.2, 0));
+        p.route = [born, jitter(device.exit, 0.12), jitter(at("edge"), 0.45), jitter(at("gateway"))];
+        p.stops = ["clients", "clients", "edge", "gateway"];
+        p.seg = 0;
+        p.t = 0;
+        p.speed = 2 + Math.random();
+        p.alive = true;
+        p.bot = true;
       };
 
-      const sim = { queue: 0, spawnDebt: 0, tick: 0, lastApp: 3, lastWorkers: 1 };
+      // Experiments run on the simulation clock: a spike overrides the load, a downed region stops
+      // serving, a flood sends bots at the gateway, a flushed cache misses until it warms up again,
+      // and a killed service is held off the autoscaler long enough to be seen missing.
+      const sim = {
+        queue: 0,
+        spawnDebt: 0,
+        botDebt: 0,
+        tick: 0,
+        lastApp: 3,
+        lastWorkers: 1,
+        spikeUntil: 0,
+        floodUntil: 0,
+        down: -1,
+        downUntil: 0,
+        holdUntil: 0,
+        flush: 0,
+        served: 0,
+      };
+      const load = () => (clock < sim.spikeUntil ? 50 : (loadRef.current ?? 10));
+      // Arrivals since the last readout, in simulated requests (see publish for the scale).
+      const counts = { regions: [0, 0, 0], allowed: 0, rejected: 0, db: 0 };
+      const rates = { regions: [0, 0, 0], allowed: 0, rejected: 0, db: 0 };
+      const setRegion = (i: number, up: boolean) => {
+        regions[i].rest = up ? undefined : dark;
+        regionFaces[i].color.setScalar(up ? 1 : 0.3);
+      };
+      const run = (e: Experiment) => {
+        if (e === "spike") sim.spikeUntil = clock + 5;
+        else if (e === "flood") sim.floodUntil = clock + 5;
+        else if (e === "flush") sim.flush = 1;
+        else if (e === "region") {
+          if (sim.down >= 0) setRegion(sim.down, true);
+          sim.down = Math.floor(Math.random() * 3);
+          sim.downUntil = clock + 6;
+          setRegion(sim.down, false);
+        } else if (e === "kill") {
+          const live = liveApp();
+          if (live.length < 2) return;
+          live[live.length - 1].target = 0;
+          sim.holdUntil = clock + 2.4;
+        }
+      };
       const pointer = new THREE.Vector2(0, 0);
       const raycaster = new THREE.Raycaster();
       let hoverId: NodeId | null = null;
@@ -691,14 +794,14 @@ export function SystemScene({
       };
 
       const step = (dt: number, t: number) => {
-        const L = loadRef.current ?? 10;
+        const L = load();
         const appTarget = Math.min(MAX_APP, Math.max(2, Math.round(2 + L * 0.17)));
         const workerTarget = Math.min(MAX_WORKERS, Math.max(1, 1 + Math.ceil(sim.queue / 30)));
         sim.tick += dt;
         if (sim.tick > 0.35) {
           sim.tick = 0;
           const liveA = liveApp().length;
-          if (liveA !== appTarget) appReplicas.forEach((r, i) => (r.target = i < (liveA < appTarget ? liveA + 1 : liveA - 1) ? 1 : 0));
+          if (liveA !== appTarget && clock > sim.holdUntil) appReplicas.forEach((r, i) => (r.target = i < (liveA < appTarget ? liveA + 1 : liveA - 1) ? 1 : 0));
           const liveW = liveWorkers().length;
           if (liveW !== workerTarget) workerReplicas.forEach((r, i) => (r.target = i < (liveW < workerTarget ? liveW + 1 : liveW - 1) ? 1 : 0));
           if (liveApp().length !== sim.lastApp || liveWorkers().length !== sim.lastWorkers) {
@@ -732,6 +835,19 @@ export function SystemScene({
           spawn();
           sim.spawnDebt -= 1;
         }
+        if (clock < sim.floodUntil) {
+          sim.botDebt += dt * 45;
+          while (sim.botDebt > 1) {
+            spawnBot();
+            sim.botDebt -= 1;
+          }
+        }
+        sim.flush = Math.max(0, sim.flush - dt / 7);
+        if (sim.down >= 0 && clock > sim.downUntil) {
+          setRegion(sim.down, true);
+          sim.down = -1;
+        }
+        sim.served += L * 20 * dt;
         for (let i = 0; i < MAX_PARTICLES; i++) {
           const p = particles[i];
           if (!p.alive) continue;
@@ -740,8 +856,14 @@ export function SystemScene({
             p.t = 0;
             p.seg += 1;
             const reached = p.stops[p.seg];
-            if (reached === "edge" && lights()) edgeHit();
-            else if (reached === "gateway" && lights()) gatewayHit();
+            if (reached === "edge") edgeServe();
+            else if (reached === "gateway" && p.bot) {
+              counts.rejected += 1;
+              if (Math.random() < 0.3) light(searchRow, 0, readWhite);
+            } else if (reached === "gateway") {
+              counts.allowed += 1;
+              if (lights()) gatewayHit();
+            }
             else if (reached === "cache" && lights()) access(p.stops[p.seg + 1] === "db");
             if (p.seg >= p.route.length - 1) {
               p.alive = false;
@@ -790,12 +912,34 @@ export function SystemScene({
       let last = performance.now();
       let visible = true;
       let lastReadout = 0;
+      let lastCount = 0;
       const publish = () => {
-        const r = {
-          throughput: Math.round((loadRef.current ?? 10) * 20),
+        const L = load();
+        // Particles stand in for many requests each; scale arrivals so they add up to the req/s readout.
+        const per = (L * 20) / (6 + L * 5.5);
+        const span = clock - lastCount;
+        if (span > 0.05) {
+          const ease = (was: number, n: number) => was + ((n * per) / span - was) * 0.2;
+          rates.regions = rates.regions.map((was, i) => ease(was, counts.regions[i]));
+          rates.allowed = ease(rates.allowed, counts.allowed);
+          rates.rejected = ease(rates.rejected, counts.rejected);
+          rates.db = ease(rates.db, counts.db);
+          counts.regions = [0, 0, 0];
+          counts.allowed = counts.rejected = counts.db = 0;
+          lastCount = clock;
+        }
+        const r: Readout = {
+          throughput: Math.round(L * 20),
           app: liveApp().length,
           queue: Math.round(sim.queue),
           workers: liveWorkers().length,
+          regions: rates.regions.map(Math.round),
+          allowed: Math.round(rates.allowed),
+          rejected: Math.round(rates.rejected),
+          hitRate: Math.round((1 - (0.25 + 0.75 * sim.flush)) * 100),
+          dbReads: Math.round(rates.db),
+          served: Math.round(sim.served),
+          elapsed: Math.floor(clock),
         };
         setReadout(r);
         callbacks.current.onReadout(r);
@@ -852,11 +996,13 @@ export function SystemScene({
       } else {
         for (let i = 0; i < 180; i++) spawn(true);
         raf = requestAnimationFrame(loop);
+        if (commandRef) commandRef.current = run;
       }
 
       const prev = cleanup;
       cleanup = () => {
         prev();
+        if (commandRef) commandRef.current = null;
         cancelAnimationFrame(raf);
         io.disconnect();
         ro.disconnect();
@@ -872,7 +1018,7 @@ export function SystemScene({
       disposed = true;
       cleanup();
     };
-  }, [loadRef, focusRef, bandRef]);
+  }, [loadRef, focusRef, bandRef, commandRef]);
 
   return (
     <div className="absolute inset-0">

@@ -194,7 +194,7 @@ Square corners everywhere (0px), including chips, panels, the slider thumb and m
 ## Components
 
 ### Links
-There are no buttons. Every action is a text link: ink-soft at rest with a 1px rule-strong underline at 0.22em offset; ink text and an amber underline on hover. The email address is a button styled as a link that copies itself, with a quiet "Copy" / "Copied" label beside it. Focus shows the global 2px amber outline at 3px offset.
+There are no call-to-action buttons. The only buttons are the experiment controls in the scroll tour (see Experiment Probe). Every other action is a text link: ink-soft at rest with a 1px rule-strong underline at 0.22em offset; ink text and an amber underline on hover. The email address is a button styled as a link that copies itself, with a quiet "Copy" / "Copied" label beside it. Focus shows the global 2px amber outline at 3px offset.
 
 ### Chips
 - **Style:** stack tags under each case study: transparent, 1px rule-strong outline, ink-soft 13px Archivo, 4px by 10px. Static, never interactive.
@@ -220,6 +220,9 @@ The visitor's hand on the system. Title "Simulated load" in Archivo semibold, th
 
 ### System Scene (signature)
 Nodes are dark metallic bodies outlined in steel linework on a faint ground grid; amber particles carry requests edge to gateway to services to queue/cache to data. Replicated tiers fan out on damped springs as load rises. Node labels float in Geist Mono, ink-soft at rest and amber while that part is in focus, with replica counts in ink-faint. The world orbits slowly with pointer parallax. Under reduced motion it renders a still frame; without WebGL an SVG of the same graph replaces it (raised squares, steel strokes, rule-strong links) and the load panel is withdrawn.
+
+### Experiment Probe (signature)
+Each scroll-tour step ends with one experiment the visitor can set off against that layer in the live simulation: send a traffic spike (clients), take an edge region offline, flood the gateway with a bot, kill a service replica, flush the cache. A 1px rule separates it from the step copy. The control is a square outlined button (1px rule-strong border, 15px Archivo semibold, ink border on hover) with an 11px marker: hollow steel at rest, solid amber while running, when the label reads "Running". While it runs, an amber 1px line drains along the top rule over the experiment's duration. Below: one sentence on what will happen, then three Geist Mono gauges (12px ink-faint labels, 15px ink values) chosen to show that layer holding (region req/s, allowed and rejected per second, cache hit rate and database reads). The last step, Operations, has no fault; its gauges report the visit so far (requests served, experiments run, time running). Probes appear only while the scene runs live; under reduced motion or without WebGL they are withdrawn. On phones the step's role footnote hides while a probe is shown, to keep the scene in view.
 
 ### Decision Record
 Each case study's stations hang on a 1px rule-strong spine that extends as it scrolls in, each marked by an 11px hollow steel square; the final station's square is solid amber. 

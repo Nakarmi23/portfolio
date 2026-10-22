@@ -1,4 +1,4 @@
-import type { NodeId } from "@/components/system-scene";
+import type { Experiment, NodeId } from "@/components/system-scene";
 
 // Everything a visitor reads on the landing page lives here.
 // Values wrapped in [brackets] are placeholders: replace them with real content before shipping.
@@ -37,37 +37,71 @@ export const profileLinks = [
   { label: "GitHub", href: person.github, handle: "Nakarmi23" },
 ];
 
+export type Capability = {
+  name: string;
+  detail: string;
+  nodes: NodeId[] | null;
+  // Something the visitor can set off in the simulation to watch this layer do its job.
+  experiment: { id: Experiment; action: string; effect: string } | null;
+};
+
 // Ordered along the path a request takes; each names the part of the system it covers.
-export const capabilities: { name: string; detail: string; nodes: NodeId[] | null }[] = [
+export const capabilities: Capability[] = [
   {
     name: "Full-stack build",
     detail: "Front end to database, so the interface is built for the system behind it.",
     nodes: ["clients"],
+    experiment: {
+      id: "spike",
+      action: "Send a traffic spike",
+      effect: "Every device sends 50× the traffic for five seconds. Watch the services scale out to meet it.",
+    },
   },
   {
     name: "Cloud infrastructure",
     detail: "Environments, scaling and cost, set up as code. The edge takes the first hit so nothing behind it has to.",
     nodes: ["edge"],
+    experiment: {
+      id: "region",
+      action: "Take a region offline",
+      effect: "One edge region goes dark for six seconds. The other two pick up its traffic.",
+    },
   },
   {
     name: "API design",
     detail: "Contracts that stay stable while the product changes underneath, with auth and rate limits at the door.",
     nodes: ["gateway"],
+    experiment: {
+      id: "flood",
+      action: "Flood the gateway",
+      effect: "A bot hammers GET /search for five seconds. The rate limit turns it away at the door, so no service sees it.",
+    },
   },
   {
     name: "System design",
     detail: "Service boundaries, failure modes, and where the load will land. Stateless services scale out; queues absorb what can wait.",
     nodes: ["app", "queue"],
+    experiment: {
+      id: "kill",
+      action: "Kill a service",
+      effect: "One replica dies. Requests carry on through the others while the autoscaler starts a replacement.",
+    },
   },
   {
     name: "Data modelling",
     detail: "Schemas, caching and consistency chosen for how the data is actually read.",
     nodes: ["cache", "db"],
+    experiment: {
+      id: "flush",
+      action: "Flush the cache",
+      effect: "Reads miss and fall through to the database until the cache warms up again.",
+    },
   },
   {
     name: "Operations",
     detail: "Monitoring, alerts and docs, so whoever runs the system can see what it is doing and why.",
     nodes: null,
+    experiment: null,
   },
 ];
 
