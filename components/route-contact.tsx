@@ -12,17 +12,29 @@ type Point = { x: number; y: number };
 
 const REGIONS = ["EU", "US", "AP"];
 
-// The request the inspector shows: which edge region served it, simulated timings, and how far it got.
-type Request = { id: string; region: number; edgeMs: number; gatewayMs: number; status: "sending" | "reached" | "done" };
+// The request the inspector shows: whose it is, which edge region served it, simulated timings, and how far it got.
+// Background requests keep the band idling like the rest of the system; the visitor's own replace them.
+type Request = {
+  id: string;
+  source: "you" | "background";
+  region: number;
+  edgeMs: number;
+  gatewayMs: number;
+  status: "sending" | "reached" | "done";
+};
 
 // A fresh request: served by any region, with small simulated timings at each hop.
-const newRequest = (id: string): Request => ({
+const newRequest = (id: string, source: Request["source"]): Request => ({
   id,
+  source,
   region: Math.floor(Math.random() * 3),
   edgeMs: 3 + Math.round(Math.random() * 9),
   gatewayMs: 1 + Math.round(Math.random() * 3),
   status: "sending",
 });
+
+// Read in event handlers and timers only, never while rendering.
+const now = () => performance.now();
 
 const HOPS = [
   { id: "you", label: "You" },
@@ -43,6 +55,9 @@ export function RouteContact({ email, emailLabel, links }: { email: string; emai
   const [landed, setLanded] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [req, setReq] = useState<Request | null>(null);
+  // The parts a background request lights on its way through: its edge region and gateway row.
+  const [ambient, setAmbient] = useState<{ region: number; row: number } | null>(null);
+  const busy = useRef({ active: null as string | null, landed: null as string | null, ownAt: -Infinity });
 
   // Every route starts at the visitor and runs through the edge and gateway; from the gateway it
   // steps across to a trunk, along it to the endpoint's row, and into the endpoint's marker.
@@ -79,7 +94,7 @@ export function RouteContact({ email, emailLabel, links }: { email: string; emai
   }, []);
 
   const send = useCallback(
-    (id: string, then?: () => void) => {
+    (id: string, then?: () => void, quiet = false) => {
       const path = routes[id];
       const layer = flight.current;
       const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -94,19 +109,75 @@ export function RouteContact({ email, emailLabel, links }: { email: string; emai
         if (i > 0) run += lengths[i - 1];
         return { transform: `translate(${p.x - 2.5}px, ${p.y - 2.5}px)`, offset: run / total };
       });
-      [0, 1, 2].forEach((i) => {
+      // The visitor's request is a burst of three; background traffic is a single, dimmer, slower square.
+      const count = quiet ? 1 : 3;
+      for (let i = 0; i < count; i++) {
         const dot = document.createElement("span");
-        dot.className = "absolute top-0 left-0 size-[5px] bg-signal";
+        dot.className = `absolute top-0 left-0 size-[5px] bg-signal ${quiet ? "opacity-50" : ""}`;
         layer.appendChild(dot);
-        const a = dot.animate(frames, { duration: 900, delay: i * 110, easing: "cubic-bezier(0.55, 0, 0.25, 1)", fill: "both" });
+        const a = dot.animate(frames, {
+          duration: quiet ? 1600 : 900,
+          delay: i * 110,
+          easing: quiet ? "cubic-bezier(0.45, 0, 0.55, 1)" : "cubic-bezier(0.55, 0, 0.25, 1)",
+          fill: "both",
+        });
         a.onfinish = () => {
           dot.remove();
-          if (i === 2) then?.();
+          if (i === count - 1) then?.();
         };
-      });
+      }
     },
     [routes],
   );
+
+  useEffect(() => {
+    busy.current.active = active;
+    busy.current.landed = landed;
+  }, [active, landed]);
+
+  // Background traffic: every few seconds, while the band is on screen and the visitor isn't routing their
+  // own request (or has just routed one), a request reaches a random endpoint. Reduced motion gets one,
+  // already landed, so the inspector is never empty.
+  const sendRef = useRef(send);
+  useEffect(() => {
+    sendRef.current = send;
+  }, [send]);
+  const ready = Object.keys(routes).length > 0;
+  useEffect(() => {
+    const el = root.current;
+    if (!el || !ready) return;
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const tick = () => {
+      const b = busy.current;
+      if (b.active || b.landed || now() - b.ownAt < 6000) return;
+      const row = Math.floor(Math.random() * endpoints.length);
+      const id = endpoints[row].id;
+      const r = newRequest(id, "background");
+      setReq(r);
+      setAmbient({ region: r.region, row });
+      sendRef.current(
+        id,
+        () => {
+          setReq((x) => (x && x.source === "background" && x.id === id ? { ...x, status: "reached" } : x));
+          setAmbient(null);
+        },
+        true,
+      );
+    };
+    const first = window.setTimeout(tick, 600);
+    if (still) return () => window.clearTimeout(first);
+    let visible = false;
+    const io = new IntersectionObserver(([e]) => (visible = e.isIntersecting));
+    io.observe(el);
+    const timer = window.setInterval(() => visible && !document.hidden && tick(), 3400);
+    return () => {
+      window.clearTimeout(first);
+      window.clearInterval(timer);
+      io.disconnect();
+    };
+    // The endpoints only change with the content, which is fixed for the page's life.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready]);
 
   useEffect(() => {
     if (!landed) return;
@@ -121,11 +192,14 @@ export function RouteContact({ email, emailLabel, links }: { email: string; emai
   }, [copied]);
 
   const dispatch = (id: string) => {
-    const r = newRequest(id);
+    const r = newRequest(id, "you");
+    busy.current.ownAt = now();
+    setAmbient(null);
     setReq(r);
     return r;
   };
-  const advance = (id: string, status: Request["status"]) => setReq((r) => (r && r.id === id ? { ...r, status } : r));
+  const advance = (id: string, status: Request["status"]) =>
+    setReq((r) => (r && r.id === id && r.source === "you" ? { ...r, status } : r));
 
   const point = (id: string) => {
     if (active === id) return;
@@ -144,7 +218,8 @@ export function RouteContact({ email, emailLabel, links }: { email: string; emai
         return;
       }
     }
-    if (req?.id !== e.id) dispatch(e.id);
+    if (req?.id !== e.id || req.source !== "you") dispatch(e.id);
+    busy.current.ownAt = now();
     send(e.id, () => {
       setLanded(e.id);
       advance(e.id, "done");
@@ -198,8 +273,8 @@ export function RouteContact({ email, emailLabel, links }: { email: string; emai
                   <HopDrawing
                     id={h.id}
                     lit={live}
-                    region={live && req ? req.region : -1}
-                    row={live && req ? endpoints.findIndex((e) => e.id === req.id) : -1}
+                    region={live && req ? req.region : (ambient?.region ?? -1)}
+                    row={live && req ? endpoints.findIndex((e) => e.id === req.id) : (ambient?.row ?? -1)}
                   />
                 </span>
                 <span className="font-mono text-[12px] text-ink-soft">{h.label}</span>
@@ -214,6 +289,8 @@ export function RouteContact({ email, emailLabel, links }: { email: string; emai
               <span className="text-[13px] text-ink-faint">Timings simulated</span>
             </div>
             <dl className="mt-4 grid grid-cols-[5.5rem_1fr] gap-x-4 gap-y-2.5 font-mono text-[12px]">
+              <dt className="text-ink-faint">from</dt>
+              <dd className={req?.source === "you" ? "text-signal" : "text-ink-soft"}>{req ? (req.source === "you" ? "you" : "background traffic") : "–"}</dd>
               <dt className="text-ink-faint">route</dt>
               <dd className="text-ink">{req ? `GET /${req.id}` : "–"}</dd>
               <dt className="text-ink-faint">edge</dt>
@@ -224,7 +301,7 @@ export function RouteContact({ email, emailLabel, links }: { email: string; emai
               <dd className={req?.status === "sending" ? "text-ink-faint" : "text-ink"}>{response}</dd>
             </dl>
             <p className="mt-4 text-[13px] text-ink-faint">
-              {req ? "Point at another endpoint to route a new request." : "Point at an endpoint to send a request through."}
+              {req?.source === "you" ? "Point at another endpoint to route a new request." : "Point at an endpoint to send your own request through."}
             </p>
           </div>
         </div>
@@ -288,39 +365,49 @@ function ArrowOut({ className = "" }: { className?: string }) {
   );
 }
 
-// The hops drawn as the scene draws them, in steel line: the visitor's devices, the edge rack with a unit
-// per region, and the gateway with its routing table. While a request is out, the serving region's light
-// and the gateway row for its route turn amber.
+// The hops drawn as the scene builds them, in a shallow oblique view with dark bodies and steel edges:
+// the fanned crowd of devices, the edge rack with one server per region (EU, US, AP) and its status lights,
+// and the gateway router with its shield and routing table. A request lights its region and route row.
 function HopDrawing({ id, lit, region, row }: { id: string; lit: boolean; region: number; row: number }) {
   const ink = lit ? "text-signal" : "text-steel";
-  const on = (hit: boolean) => (hit ? "fill-signal" : "fill-current");
+  const body = "fill-ground";
+  const top = "fill-raised";
   return (
-    <svg viewBox="0 0 44 36" fill="none" stroke="currentColor" strokeWidth="1" aria-hidden className={`h-12 w-[58px] transition-colors duration-300 ${ink}`}>
+    <svg viewBox="0 0 72 56" fill="none" stroke="currentColor" strokeWidth="1" strokeLinejoin="round" aria-hidden className={`h-14 w-[72px] transition-colors duration-300 ${ink}`}>
       {id === "you" && (
         <>
-          <rect x="5.5" y="6.5" width="24" height="16" />
-          <path d="M2.5 25.5h30" />
-          <rect x="33.5" y="11.5" width="8" height="15" />
-          <path d="M36.5 23.5h2" />
+          {/* A tablet fanned out behind, the laptop in front, two phones to its right. */}
+          <path d="M4.5 13.5 21.5 9.5 23.5 27.5 6.5 31.5Z" className={body} />
+          <path d="M16.5 15.5h26v18h-26Z" className={body} />
+          <path d="M18.5 17.5h22v14h-22Z" className="fill-raised" strokeOpacity="0.5" />
+          <path d="M12.5 35.5h34l4 5h-42Z" className={top} />
+          <path d="M48.5 20.5 56.5 19.5 57.5 36.5 49.5 37.5Z" className={body} />
+          <path d="M59.5 23.5 66.5 24.5 65.5 39.5 58.5 38.5Z" className={body} />
         </>
       )}
       {id === "edge" && (
         <>
-          <rect x="7.5" y="1.5" width="29" height="33" />
+          <path d="M14.5 10.5 22.5 4.5h34l-8 6Z" className={top} />
+          <path d="M48.5 10.5 56.5 4.5v42l-8 6Z" className={body} />
+          <path d="M14.5 10.5h34v42h-34Z" className={body} />
           {[0, 1, 2].map((i) => (
             <g key={i}>
-              <rect x="10.5" y={5.5 + i * 9.5} width="23" height="7" />
-              <rect x="28.5" y={7.5 + i * 9.5} width="3" height="3" stroke="none" className={on(region === i)} />
+              <path d={`M17.5 ${14.5 + i * 12.5}h28v9h-28Z`} />
+              <path d={`M20.5 ${19 + i * 12.5}h12`} strokeOpacity="0.6" strokeDasharray="2 1.5" />
+              <rect x="38.5" y={17.5 + i * 12.5} width="3" height="3" stroke="none" className={region === i ? "fill-signal" : "fill-current opacity-60"} />
             </g>
           ))}
         </>
       )}
       {id === "gateway" && (
         <>
-          <rect x="1.5" y="8.5" width="41" height="19" />
-          <path d="M10 13.5l4 1.5v3.5c0 2.5-2 4-4 5-2-1-4-2.5-4-5V15z" />
+          <path d="M4.5 20.5 12.5 14.5h56l-8 6Z" className={top} />
+          <path d="M60.5 20.5 68.5 14.5v20l-8 6Z" className={body} />
+          <path d="M4.5 20.5h56v20h-56Z" className={body} />
+          <path d="M14 25l5 2v4.5c0 3-2.5 5-5 6-2.5-1-5-3-5-6V27Z" />
+          <path d="M24.5 24.5h32v12h-32Z" className="fill-raised" />
           {[0, 1, 2].map((i) => (
-            <rect key={i} x="19.5" y={12.5 + i * 4} width="19" height="2" stroke="none" className={row === i ? "fill-signal" : "fill-current opacity-60"} />
+            <rect key={i} x="27" y={26.75 + i * 3.25} width="27" height="1.5" stroke="none" className={row === i ? "fill-signal" : "fill-current opacity-60"} />
           ))}
         </>
       )}
