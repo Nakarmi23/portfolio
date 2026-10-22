@@ -28,7 +28,10 @@ export function Reveal() {
       },
       { rootMargin: "0px 0px -8% 0px" },
     );
-    parts.forEach((el) => io.observe(el));
+    // What's already on the first screen rises in on load, even inside the bottom margin the observer leaves.
+    const first = parts.filter((el) => el.getBoundingClientRect().top < window.innerHeight);
+    requestAnimationFrame(() => first.forEach((el) => el.classList.add("revealed")));
+    parts.filter((el) => !first.includes(el)).forEach((el) => io.observe(el));
     return () => io.disconnect();
   }, []);
 

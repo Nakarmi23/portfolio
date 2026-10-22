@@ -237,7 +237,7 @@ Each case study's stations hang on a 1px rule-strong spine that extends as it sc
 - **Do** keep Geist Mono to live readouts and 3D diagram labels.
 - **Do** label every simulated figure as simulated, in the control's own title or adjacent copy.
 - **Do** divide with 1px rules (rule, or rule-strong where the edge must read) and keep every corner square.
-- **Do** reveal section parts once on entry (24px rise, 0.8s, cubic-bezier(0.16, 1, 0.3, 1), 75ms stagger) and leave content visible without script or under reduced motion.
+- **Do** reveal section parts once on entry (24px rise, 0.8s, cubic-bezier(0.16, 1, 0.3, 1), 75ms stagger) and leave content visible without script or under reduced motion. Parts already on the first screen rise in on load, so nothing in the first viewport waits for a scroll.
 - **Do** keep small text at ink-faint (#7c8596) or brighter.
 
 ### Don't:
