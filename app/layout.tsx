@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Archivo, Geist_Mono } from "next/font/google";
+import { person, summary } from "@/content/site";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -14,9 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ankit Nakarmi — Software engineer",
-  description:
-    "Ankit Nakarmi is a software engineer working front end to database. Selected work and experience.",
+  title: `${person.name} — ${person.role}`,
+  description: `${person.name}: ${summary}`,
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

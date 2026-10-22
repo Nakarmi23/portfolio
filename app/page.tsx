@@ -2,7 +2,7 @@ import { CopyEmail } from "@/components/copy-email";
 import { HashSync } from "@/components/hash-sync";
 import { Reveal } from "@/components/reveal";
 import { SystemStory } from "@/components/system-story";
-import { capabilities, emailLabel, lines, person, profileLinks, register } from "@/content/site";
+import { capabilities, emailLabel, lines, person, profileLinks, register, summary } from "@/content/site";
 
 const gutter = "px-4 sm:px-8 lg:px-14 xl:px-20";
 const h2 = "text-[clamp(2.25rem,4.4vw,3.75rem)] leading-[1] font-bold tracking-[-0.035em] [font-stretch:112%]";
@@ -43,8 +43,7 @@ export default function Home() {
                 {person.name}
               </h1>
               <p data-reveal className={`mt-6 max-w-[34rem] ${lead}`}>
-                Software engineer, ten years in, working front end to database. Currently a solutions architect at
-                Cedar Gate Technologies.
+                {summary}
               </p>
               <ul data-reveal className="mt-8 flex flex-wrap items-baseline gap-x-8 gap-y-3 text-lg text-ink-soft">
                 <li>

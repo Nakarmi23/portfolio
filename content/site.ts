@@ -22,7 +22,7 @@ export type CaseLine = {
 
 export const person = {
   name: "Ankit Nakarmi",
-  role: "Software Engineer & Solutions Architect",
+  role: "Solutions Architect",
   email: "ankit.nakarmi23@gmail.com",
   linkedin: "https://www.linkedin.com/in/ankit-nakarmi-3ba89b19a",
   github: "https://github.com/Nakarmi23",
@@ -138,3 +138,18 @@ export const register: RegisterRow[] = [
   { years: "Mar 2018 – Mar 2025", role: "Senior Software Developer", org: "Channakya Software Pvt. Ltd." },
   { years: "Nov 2015 – Jun 2017", role: "Junior Web Designer", org: "Freelance Unit Pvt. Ltd." },
 ];
+
+// Whole years since the earliest role in the register started, e.g. "Nov 2015 – Jun 2017" counts from Nov 2015.
+const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const careerStart = Math.min(
+  ...register.map((row) => {
+    const [month, year] = row.years.split(" – ")[0].split(" ");
+    return Number(year) * 12 + months.indexOf(month);
+  }),
+);
+const now = new Date();
+export const yearsOfExperience = Math.floor((now.getFullYear() * 12 + now.getMonth() - careerStart) / 12);
+
+// The role marked "Present" leads the site's description; the years as an engineer back it up.
+export const currentRole = register.find((row) => row.years.endsWith("Present")) ?? register[0];
+export const summary = `${currentRole.role} at ${currentRole.org}, backed by ${yearsOfExperience}\u00a0years as a software engineer building web software front end to database.`;
