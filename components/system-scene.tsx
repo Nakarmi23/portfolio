@@ -55,7 +55,7 @@ export function SystemScene({
   const mount = useRef<HTMLDivElement>(null);
   const labels = useRef<Partial<Record<NodeId, HTMLDivElement | null>>>({});
   const callbacks = useRef({ onReadout, onHover, onMode });
-  const [readout, setReadout] = useState<Readout>({ throughput: 120, app: 3, queue: 0, workers: 1 });
+  const [readout, setReadout] = useState<Readout>({ throughput: 200, app: 3, queue: 0, workers: 1 });
   const [lit, setLit] = useState<NodeId[]>([]);
   const [hover, setHoverState] = useState<NodeId | null>(null);
   const [mode, setMode] = useState<"pending" | "live" | "still" | "none">("pending");
@@ -461,7 +461,7 @@ export function SystemScene({
         v.clone().add(new THREE.Vector3((Math.random() - 0.5) * s, (Math.random() - 0.5) * s, (Math.random() - 0.5) * s));
       const pick = <X,>(xs: X[]) => xs[Math.floor(Math.random() * xs.length)];
       // Only a share of arrivals light up, and that share grows with load, so light reads as busyness.
-      const lights = () => Math.random() < 0.15 + (loadRef.current ?? 6) * 0.017;
+      const lights = () => Math.random() < 0.15 + (loadRef.current ?? 10) * 0.017;
 
       const spawn = (midFlight = false) => {
         const p = particles.find((x) => !x.alive);
@@ -691,7 +691,7 @@ export function SystemScene({
       };
 
       const step = (dt: number, t: number) => {
-        const L = loadRef.current ?? 6;
+        const L = loadRef.current ?? 10;
         const appTarget = Math.min(MAX_APP, Math.max(2, Math.round(2 + L * 0.17)));
         const workerTarget = Math.min(MAX_WORKERS, Math.max(1, 1 + Math.ceil(sim.queue / 30)));
         sim.tick += dt;
@@ -792,7 +792,7 @@ export function SystemScene({
       let lastReadout = 0;
       const publish = () => {
         const r = {
-          throughput: Math.round((loadRef.current ?? 6) * 20),
+          throughput: Math.round((loadRef.current ?? 10) * 20),
           app: liveApp().length,
           queue: Math.round(sim.queue),
           workers: liveWorkers().length,
@@ -824,7 +824,7 @@ export function SystemScene({
         // and the camera cutting (never gliding) to whatever the page focuses.
         for (let i = 0; i < 260; i++) spawn(true);
         const settle = () => {
-          const L = loadRef.current ?? 6;
+          const L = loadRef.current ?? 10;
           const apps = Math.min(MAX_APP, Math.max(2, Math.round(2 + L * 0.17)));
           const workers = Math.min(MAX_WORKERS, Math.max(1, Math.ceil((L * 1.25) / 6)));
           sim.queue = Math.max(0, L * 1.25 - workers * 6) * 4;

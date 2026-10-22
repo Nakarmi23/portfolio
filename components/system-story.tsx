@@ -8,10 +8,10 @@ type Step = { name: string; detail: string; nodes: NodeId[] | null };
 // The live system stays pinned while the page walks the request path past it.
 // Each step tells the camera which part of the system to frame.
 export function SystemStory({ hero, steps }: { hero: ReactNode; steps: Step[] }) {
-  const loadRef = useRef(6);
+  const loadRef = useRef(10);
   const focusRef = useRef<NodeId[] | null>(null);
-  const [load, setLoad] = useState(6);
-  const [readout, setReadout] = useState<Readout>({ throughput: 120, app: 3, queue: 0, workers: 1 });
+  const [load, setLoad] = useState(10);
+  const [readout, setReadout] = useState<Readout>({ throughput: 200, app: 3, queue: 0, workers: 1 });
   const [hovered, setHovered] = useState<NodeId | null>(null);
   const [active, setActive] = useState(-1);
   // Without WebGL there is nothing for the load control to drive, so it is not offered.
