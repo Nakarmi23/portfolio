@@ -10,12 +10,6 @@ export type Station = {
   body: string;
 };
 
-export const firstEmail = [
-  "What you're building, and who uses it.",
-  "What's hard about it: scale, cost, speed of change, or a deadline.",
-  "When you need it, and what's already in place.",
-];
-
 export type CaseLine = {
   id: LineId;
   code: string;
@@ -29,7 +23,6 @@ export type CaseLine = {
 export const person = {
   name: "Ankit Nakarmi",
   role: "Software Engineer & Solutions Architect",
-  availability: "Available for new projects now",
   email: "ankit.nakarmi23@gmail.com",
   linkedin: "https://www.linkedin.com/in/ankit-nakarmi-3ba89b19a",
   github: "https://github.com/Nakarmi23",
@@ -38,16 +31,17 @@ export const person = {
 // Until a real address is set, the visible email reads as a placeholder.
 export const emailLabel = person.email.endsWith("@example.com") ? `[${person.email}]` : person.email;
 
+// handle is what the contact list shows in place of the full URL.
 export const profileLinks = [
-  { label: "LinkedIn", href: person.linkedin },
-  { label: "GitHub", href: person.github },
+  { label: "LinkedIn", href: person.linkedin, handle: "Ankit Nakarmi" },
+  { label: "GitHub", href: person.github, handle: "Nakarmi23" },
 ];
 
 // Ordered along the path a request takes; each names the part of the system it covers.
 export const capabilities: { name: string; detail: string; nodes: NodeId[] | null }[] = [
   {
     name: "Full-stack build",
-    detail: "Front end to database, written against the agreed design, so the client is built for the system behind it.",
+    detail: "Front end to database, so the interface is built for the system behind it.",
     nodes: ["clients"],
   },
   {
@@ -71,37 +65,9 @@ export const capabilities: { name: string; detail: string; nodes: NodeId[] | nul
     nodes: ["cache", "db"],
   },
   {
-    name: "Delivery & handover",
-    detail: "Monitoring, docs, and a team that can run the whole thing without me.",
+    name: "Operations",
+    detail: "Monitoring, alerts and docs, so whoever runs the system can see what it is doing and why.",
     nodes: null,
-  },
-];
-
-// The route of an engagement, end to end. Confirm it matches how you actually work.
-export const route: Station[] = [
-  {
-    label: "Scope",
-    body: "Pin down what you need built, what already exists, and what has to be true at launch.",
-  },
-  {
-    label: "Plan",
-    body: "Sketch the system and write down the trade-offs, so the build doesn't paint you into a corner.",
-  },
-  {
-    label: "Build",
-    body: "The bulk of the work. I write the code myself, front end to database, in steps you can see running.",
-  },
-  {
-    label: "Ship",
-    body: "Put it into production with the monitoring to know it's holding up.",
-  },
-  {
-    label: "Iterate",
-    body: "Adjust to what real users do, without reworking the foundations.",
-  },
-  {
-    label: "Hand over",
-    body: "Leave docs and a team that can run it without me.",
   },
 ];
 

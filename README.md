@@ -1,6 +1,6 @@
 # Ankit Nakarmi — portfolio
 
-The personal site of Ankit Nakarmi, a freelance software engineer who thinks the system through before building it.
+The personal portfolio of Ankit Nakarmi, a software engineer who thinks the system through before building it.
 
 The landing page is built around a live WebGL scene: a small system architecture (clients, app servers, a queue and workers) running under simulated load. Visitors can change the load and watch the system scale, while the page walks the request path step by step.
 

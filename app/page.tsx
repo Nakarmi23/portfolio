@@ -2,18 +2,15 @@ import { CopyEmail } from "@/components/copy-email";
 import { HashSync } from "@/components/hash-sync";
 import { Reveal } from "@/components/reveal";
 import { SystemStory } from "@/components/system-story";
-import { capabilities, emailLabel, firstEmail, lines, person, profileLinks, register, route } from "@/content/site";
-
-const mailto = `mailto:${person.email}?subject=New%20project`;
+import { capabilities, emailLabel, lines, person, profileLinks, register } from "@/content/site";
 
 const gutter = "px-4 sm:px-8 lg:px-14 xl:px-20";
 const h2 = "text-[clamp(2.25rem,4.4vw,3.75rem)] leading-[1] font-bold tracking-[-0.035em] [font-stretch:112%]";
-const sections = ["work", "approach", "experience", "contact"];
+const sections = ["work", "experience", "contact"];
 const lead = "text-lg leading-snug text-ink-soft sm:text-xl";
 // Widens a small text link's hit area to 44px for touch without moving the layout.
 const hit = "-my-3 inline-block py-3";
-
-const press = "transition-[background-color,color,transform] duration-200 active:translate-y-[1px]";
+const link = "underline decoration-rule-strong transition-colors hover:text-ink hover:decoration-signal";
 
 export default function Home() {
   return (
@@ -21,18 +18,15 @@ export default function Home() {
       <Reveal />
       <HashSync ids={sections} />
       <header className="fixed inset-x-0 top-0 z-30 border-b border-rule bg-ground">
-        <div className={`flex h-16 items-center justify-between gap-6 ${gutter}`}>
+        <div className={`flex h-16 items-center justify-between gap-4 ${gutter}`}>
           <a href="#top" className={`text-[17px] font-bold tracking-tight [font-stretch:112%] ${hit}`}>
             {person.name}
           </a>
-          <nav aria-label="Sections" className="hidden items-center gap-8 text-[15px] text-ink-soft md:flex">
+          <nav aria-label="Sections" className="flex items-center gap-4 text-sm text-ink-soft sm:gap-6 sm:text-[15px] md:gap-8">
             <a href="#work" className={`transition-colors hover:text-ink ${hit}`}>Work</a>
-            <a href="#approach" className={`transition-colors hover:text-ink ${hit}`}>Approach</a>
             <a href="#experience" className={`transition-colors hover:text-ink ${hit}`}>Experience</a>
+            <a href="#contact" className={`transition-colors hover:text-ink ${hit}`}>Contact</a>
           </nav>
-          <a href={mailto} className={`bg-signal px-4 py-[11px] text-[15px] font-semibold text-signal-ink hover:bg-ink ${press}`}>
-            Start a project
-          </a>
         </div>
       </header>
 
@@ -46,22 +40,22 @@ export default function Home() {
                 data-reveal
                 className="text-[clamp(2.25rem,11.3vw,2.75rem)] leading-[0.94] font-bold tracking-[-0.045em] text-balance [font-stretch:112%] sm:text-[clamp(2.75rem,7.6vw,4.25rem)] lg:text-[clamp(2.75rem,5.6vw,5.25rem)]"
               >
-                I build software that holds up.
+                {person.name}
               </h1>
               <p data-reveal className={`mt-6 max-w-[34rem] ${lead}`}>
-                Software engineer with 10+ years of shipping, front end to database. I think the system through
-                before I write it, so what you launch keeps working as traffic and features grow.
+                Software engineer, ten years in, working front end to database. Currently a solutions architect at
+                Cedar Gate Technologies.
               </p>
-              <div data-reveal className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
-                <a href={mailto} className={`bg-signal px-6 py-3.5 text-lg font-semibold text-signal-ink hover:bg-ink ${press}`}>
-                  Start a project
-                </a>
-                <CopyEmail email={person.email} label={emailLabel} className="text-lg text-ink-soft" />
-              </div>
-              <p data-reveal className="mt-6 flex items-center gap-3 text-[15px] text-ink-soft">
-                <span aria-hidden className="blink size-2 bg-steel" />
-                {person.availability}
-              </p>
+              <ul data-reveal className="mt-8 flex flex-wrap items-baseline gap-x-8 gap-y-3 text-lg text-ink-soft">
+                <li>
+                  <CopyEmail email={person.email} label={emailLabel} />
+                </li>
+                {profileLinks.map((l) => (
+                  <li key={l.label}>
+                    <a href={l.href} className={`${link} ${hit}`}>{l.label}</a>
+                  </li>
+                ))}
+              </ul>
             </>
           }
         />
@@ -123,38 +117,7 @@ export default function Home() {
           ))}
         </section>
 
-        <section id="approach" aria-labelledby="approach-title" className={`pt-28 md:pt-44 ${gutter}`}>
-          <div className="grid gap-6 lg:grid-cols-12">
-            <h2 data-reveal id="approach-title" className={`${h2} lg:col-span-5`}>
-              One person, end to end
-            </h2>
-            <p data-reveal className={`max-w-[36rem] lg:col-span-6 lg:col-start-7 ${lead}`}>
-              You work with one engineer from the first call to the production deploy. I plan just enough to build it
-              right, then write the code myself, so nothing is lost in a hand-off.
-            </p>
-          </div>
-
-          <ol className="mt-14 grid border-t border-rule md:mt-20 md:grid-cols-3 xl:grid-cols-6">
-            {route.map((stop, i) => (
-              <li
-                data-reveal
-                key={stop.label}
-                className="group relative border-b border-rule py-8 pr-6 md:border-r md:pl-6 md:first:pl-0 xl:border-b-0 xl:last:border-r-0"
-              >
-                <span
-                  aria-hidden
-                  className={`absolute -top-[6px] left-0 size-[11px] md:left-6 md:group-first:left-0 ${
-                    i === route.length - 1 ? "bg-signal" : "border border-steel bg-ground"
-                  }`}
-                />
-                <h3 className="text-lg font-semibold">{stop.label}</h3>
-                <p className="mt-2 max-w-[30ch] text-[15px] leading-relaxed text-ink-soft">{stop.body}</p>
-              </li>
-            ))}
-          </ol>
-        </section>
-
-        <section id="experience" aria-labelledby="experience-title" className={`pt-28 pb-28 md:pt-44 md:pb-44 ${gutter}`}>
+        <section id="experience" aria-labelledby="experience-title" className={`pt-28 pb-24 md:pt-44 md:pb-32 ${gutter}`}>
           <div className="grid gap-6 lg:grid-cols-12">
             <h2 data-reveal id="experience-title" className={`${h2} lg:col-span-5`}>
               Experience
@@ -194,61 +157,77 @@ export default function Home() {
         </section>
 
         <section id="contact" aria-labelledby="contact-title" className="border-t border-rule bg-raised">
-          <div className={`grid gap-16 pt-24 pb-20 md:pt-32 md:pb-28 lg:grid-cols-12 ${gutter}`}>
-            <div className="lg:col-span-7">
-              <h2
-                data-reveal
-                id="contact-title"
-                className="text-[clamp(2.75rem,6.2vw,5.75rem)] leading-[0.94] font-bold tracking-[-0.045em] text-balance [font-stretch:112%]"
-              >
-                What are you building?
+          <div className={`grid gap-12 pt-24 pb-20 md:pt-32 md:pb-28 lg:grid-cols-12 ${gutter}`}>
+            <div className="lg:col-span-5">
+              <h2 data-reveal id="contact-title" className={h2}>
+                Contact
               </h2>
               <p data-reveal className={`mt-6 max-w-[34rem] ${lead}`}>
-                Tell me what you need built. I&rsquo;ll reply with how I&rsquo;d approach it.
-              </p>
-              <a
-                data-reveal
-                href={mailto}
-                className={`mt-10 inline-block bg-signal px-7 py-4 text-xl font-semibold text-signal-ink hover:bg-ink ${press}`}
-              >
-                Start a project
-              </a>
-              <p data-reveal className="mt-5 text-lg text-ink-soft">
-                or write to <CopyEmail email={person.email} label={emailLabel} className="text-ink" />
+                Email is the quickest way to reach me. I&rsquo;m also open to freelance projects.
               </p>
             </div>
 
-            <div className="lg:col-span-4 lg:col-start-9 lg:pt-4">
-              <h3 data-reveal className="text-lg font-semibold">
-                What helps in a first email
-              </h3>
-              <ul className="mt-6 space-y-4">
-                {firstEmail.map((item) => (
-                  <li data-reveal key={item} className="relative pl-7 text-lg leading-snug text-ink-soft">
-                    <span aria-hidden className="absolute top-[0.45rem] left-0 size-[11px] border border-steel" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          <footer className={`flex flex-wrap items-center justify-between gap-6 border-t border-rule py-8 text-[15px] text-ink-soft ${gutter}`}>
-            <p>© {person.name}</p>
-            <ul className="flex gap-8">
-              {profileLinks.map((link) => (
-                <li key={link.label}>
-                  {link.href ? (
-                    <a href={link.href} className={`transition-colors hover:text-ink ${hit}`}>{link.label}</a>
-                  ) : (
-                    <span>{link.label} [add URL]</span>
-                  )}
-                </li>
+            <dl data-reveal className="border-t border-rule-strong lg:col-span-6 lg:col-start-7 lg:mt-3">
+              <div className="flex flex-col gap-1 border-b border-rule py-5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+                <dt className="text-[15px] text-ink-faint">Email</dt>
+                <dd className="text-lg text-ink sm:text-xl">
+                  <CopyEmail email={person.email} label={emailLabel} />
+                </dd>
+              </div>
+              {/* The whole row is the link, so the target is as wide as the rule it sits on. */}
+              {profileLinks.map((l) => (
+                <div
+                  key={l.label}
+                  className="group relative flex flex-col gap-1 border-b border-rule py-5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6"
+                >
+                  <dt className="text-[15px] text-ink-faint transition-colors group-hover:text-ink-soft">{l.label}</dt>
+                  <dd className="text-lg text-ink sm:text-xl">
+                    <a
+                      href={l.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-baseline gap-3 after:absolute after:inset-0"
+                    >
+                      <span className="underline decoration-rule-strong transition-colors group-hover:decoration-signal">
+                        {l.handle}
+                      </span>
+                      <ArrowOut className="size-3 self-center text-ink-faint transition-[color,translate] duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-ink" />
+                      <span className="sr-only">(opens in a new tab)</span>
+                    </a>
+                  </dd>
+                </div>
               ))}
-            </ul>
-          </footer>
+            </dl>
+          </div>
         </section>
       </main>
+
+      <footer className={`flex items-center justify-between gap-6 border-t border-rule bg-raised py-6 text-[15px] text-ink-faint ${gutter}`}>
+        <p>
+          © {new Date().getFullYear()} {person.name}
+        </p>
+        <a href="#top" className={`group inline-flex items-center gap-2.5 text-ink-soft transition-colors hover:text-ink ${hit}`}>
+          Back to top
+          <ArrowUp className="size-3 transition-[color,translate] duration-200 group-hover:-translate-y-0.5" />
+        </a>
+      </footer>
     </>
+  );
+}
+
+// Drawn arrows on a 12px grid at a 1.25px stroke, matching the hairline weight of the page.
+function ArrowOut({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.25" aria-hidden className={className}>
+      <path d="M3 9 9 3M4 3h5v5" />
+    </svg>
+  );
+}
+
+function ArrowUp({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.25" aria-hidden className={className}>
+      <path d="M6 10.5V1.5M2.5 5 6 1.5 9.5 5" />
+    </svg>
   );
 }

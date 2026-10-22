@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 
 // The visible address copies itself, so visitors without a mail app (webmail, work laptops) can still reach out.
-// The "Start a project" button beside it keeps the mailto path.
 // If the clipboard is unavailable, it falls back to opening the mail app.
 export function CopyEmail({ email, label, className = "" }: { email: string; label: string; className?: string }) {
   const [copied, setCopied] = useState(false);

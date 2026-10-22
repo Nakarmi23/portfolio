@@ -10,21 +10,20 @@ web
 
 A mixed audience landing on the personal site of Ankit Nakarmi (name taken from the git author; confirm spelling before shipping):
 
-- **Prospective freelance clients** (founders, agencies, product teams): the **primary** audience. They decide whether to bring Ankit in on a project.
-- **Hiring managers and recruiters** checking fit for a full-stack or solutions-architect role (secondary).
-- **Peers** looking at the work and background (secondary).
+- **Peers, hiring managers and recruiters** looking at the work and background.
+- **Prospective freelance clients** (secondary). The site mentions freelance work once, quietly, beside the contact links; it does not pitch.
 
-Visitors are usually short on time and arrive from a link (LinkedIn, GitHub, a résumé, a referral). Their job is to work out quickly what Ankit builds and how he thinks, then decide whether to get in touch.
+Visitors are usually short on time and arrive from a link (LinkedIn, GitHub, a résumé, a referral). Their job is to see what Ankit has built and how he thinks.
 
 ## Product Purpose
 
-A personal portfolio for a **Full Stack Software Engineer and Solutions Architect**. It shows shipped work through case studies and gives a credible work history. A visit succeeds when the visitor understands the scope of work Ankit takes on and reaches out by email, LinkedIn, or GitHub.
+A personal portfolio, not a sales page, for a **Software Engineer and Solutions Architect**. It shows shipped work through case studies and a credible work history. A visit succeeds when the visitor understands what Ankit builds and how he thinks; contact links are there for anyone who wants them.
 
 ## Positioning
 
 Ankit works across both levels: hands-on full-stack engineering and solutions architecture (system design, technical decisions, trade-offs). The case studies should show both the shipped product and the architectural reasoning behind it.
 
-**Angle (revised 2026-10-20):** the site is mainly for **freelance work**, and clients come looking for someone who can **build**. Lead with the builder: a software engineer who ships, front end to database. Use "software engineer", not "full-stack engineer", as the title. The architecture experience is the differentiator, not the headline: *he thinks it through first, so what he builds holds up* under load and as the product grows. Don't open with the solutions-architect title; the experience table carries it as proof. Copy may state this angle, but specific claims about scale (numbers, uptime, traffic) need real evidence from Ankit.
+**Angle (revised 2026-10-22):** a portfolio, not a freelance sales page. The earlier freelance-first angle (2026-10-20) read as a pitch and was dropped. No calls to action, no engagement process, no availability status, no "what are you building?" prompts. The hero states who Ankit is and his current role plainly; freelance work gets one quiet line in the contact section. Claims about scale (numbers, uptime, traffic) still need real evidence from Ankit.
 
 **Tone guardrails:** not a generic SaaS hero, not playful, not corporate or consultancy-speak.
 
@@ -32,7 +31,7 @@ Ankit works across both levels: hands-on full-stack engineering and solutions ar
 
 ## Operating Context
 
-- Visitors often arrive from LinkedIn, GitHub, or a shared résumé link, and come back to the site when they're evaluating a candidate or vendor.
+- Visitors often arrive from LinkedIn, GitHub, or a shared résumé link, and come back to the site when they're evaluating a candidate.
 - Case studies are long-form reading; the overview and the contact links are scanned.
 
 ## Capabilities and Constraints
