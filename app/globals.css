@@ -90,6 +90,24 @@ a {
   }
 }
 
+/* The availability marker blinks like a status light: on, a soft fade out, back on. */
+@keyframes blink {
+  0%,
+  55% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 0.15;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.blink {
+  animation: blink 1.6s ease-in-out infinite;
+}
+
 /* The load control: a fine track with a square amber thumb. */
 .load-range {
   appearance: none;
@@ -148,7 +166,8 @@ a {
   html {
     scroll-behavior: auto;
   }
-  .extend {
+  .extend,
+  .blink {
     animation: none;
   }
 }

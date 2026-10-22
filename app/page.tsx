@@ -59,7 +59,7 @@ export default function Home() {
                 <CopyEmail email={person.email} label={emailLabel} className="text-lg text-ink-soft" />
               </div>
               <p data-reveal className="mt-6 flex items-center gap-3 text-[15px] text-ink-soft">
-                <span aria-hidden className="size-2 bg-steel" />
+                <span aria-hidden className="blink size-2 bg-steel" />
                 {person.availability}
               </p>
             </>
