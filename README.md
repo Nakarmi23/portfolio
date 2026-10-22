@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ankit Nakarmi — portfolio
 
-## Getting Started
+The personal site of Ankit Nakarmi, a freelance software engineer who thinks the system through before building it.
 
-First, run the development server:
+The landing page is built around a live WebGL scene: a small system architecture (clients, app servers, a queue and workers) running under simulated load. Visitors can change the load and watch the system scale, while the page walks the request path step by step.
+
+## Stack
+
+- [Next.js](https://nextjs.org) 16 (App Router) and React 19
+- TypeScript
+- Tailwind CSS 4
+- [three.js](https://threejs.org) for the system scene
+- pnpm
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Other scripts:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+pnpm build   # production build
+pnpm start   # serve the production build
+pnpm lint    # run ESLint
+```
 
-## Learn More
+## Project layout
 
-To learn more about Next.js, take a look at the following resources:
+```
+app/          page, layout and global styles
+components/   system scene, scroll story and small UI pieces
+content/      site copy: profile, capabilities, case studies, work history
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Most text on the site lives in `content/site.ts`, so copy changes don't touch the components.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Design notes
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `PRODUCT.md`: who the site is for and what it has to do
+- `DESIGN.md`: the design system (colours, type, motion)
