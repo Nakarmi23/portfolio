@@ -2,6 +2,7 @@ import { CopyEmail } from "@/components/copy-email";
 import { HashSync } from "@/components/hash-sync";
 import { Reveal } from "@/components/reveal";
 import { SystemStory } from "@/components/system-story";
+import { cacheLife } from "next/cache";
 import { capabilities, emailLabel, lines, person, profileLinks, register, summary } from "@/content/site";
 
 const gutter = "px-4 sm:px-8 lg:px-14 xl:px-20";
@@ -203,7 +204,7 @@ export default function Home() {
 
       <footer className={`flex items-center justify-between gap-6 border-t border-rule bg-raised py-6 text-[15px] text-ink-faint ${gutter}`}>
         <p>
-          © {new Date().getFullYear()} {person.name}
+          © <CurrentYear /> {person.name}
         </p>
         <a href="#top" className={`group inline-flex items-center gap-2.5 text-ink-soft transition-colors hover:text-ink ${hit}`}>
           Back to top
@@ -212,6 +213,13 @@ export default function Home() {
       </footer>
     </>
   );
+}
+
+// The year for the copyright line, cached so the page can still be prerendered; it rolls over within a day.
+async function CurrentYear() {
+  "use cache";
+  cacheLife("days");
+  return new Date().getFullYear();
 }
 
 // Drawn arrows on a 12px grid at a 1.25px stroke, matching the hairline weight of the page.
