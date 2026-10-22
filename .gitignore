@@ -42,3 +42,9 @@ next-env.d.ts
 
 # claude code local settings
 .claude/settings.local.json
+
+# design review captures (generated) and locally installed agent skills
+.taste-skill/
+.impeccable/review/
+.impeccable/mocks/
+.agents/
