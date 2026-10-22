@@ -17,6 +17,8 @@ export type CaseLine = {
   stack: string[];
   // Where the work can be seen, e.g. its package on a registry.
   links: { label: string; href: string }[];
+  // A published npm package whose download counts are shown, counted from its first publish date.
+  npm?: { name: string; since: string };
   stations: Station[];
 };
 
@@ -114,6 +116,7 @@ export const lines: CaseLine[] = [
       "A TypeScript library for Nepal’s Bikram Sambat calendar: converting between AD and BS dates, and parsing, formatting, shifting and comparing BS dates from 1970 to 2111 BS.",
     stack: ["TypeScript", "Day.js", "Jest", "tsup"],
     links: [{ label: "@nakarmi23/bikram-sambat on npm", href: "https://www.npmjs.com/package/@nakarmi23/bikram-sambat" }],
+    npm: { name: "@nakarmi23/bikram-sambat", since: "2024-06-27" },
     stations: [
       {
         label: "Problem",

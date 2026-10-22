@@ -4,6 +4,7 @@ import { Reveal } from "@/components/reveal";
 import { RouteContact } from "@/components/route-contact";
 import { SystemStory } from "@/components/system-story";
 import { cacheLife } from "next/cache";
+import { getDownloads } from "@/lib/npm-downloads";
 import { capabilities, emailLabel, lines, person, profileLinks, register, summary } from "@/content/site";
 
 const gutter = "px-4 sm:px-8 lg:px-14 xl:px-20";
@@ -94,6 +95,7 @@ export default function Home() {
                       </li>
                     ))}
                   </ul>
+                  {line.npm && <NpmDownloads name={line.npm.name} since={line.npm.since} />}
                   {line.links.length > 0 && (
                     <ul data-reveal className="mt-6 space-y-2 text-lg text-ink-soft">
                       {line.links.map((l) => (
@@ -206,6 +208,34 @@ async function CurrentYear() {
   "use cache";
   cacheLife("days");
   return new Date().getFullYear();
+}
+
+// A package's npm downloads: all time, this calendar year and this month, as far as npm has counted.
+// Hidden when npm can't be reached.
+async function NpmDownloads({ name, since }: { name: string; since: string }) {
+  const d = await getDownloads(name, since);
+  if (!d) return null;
+  const n = (v: number) => v.toLocaleString("en-US");
+  const through = new Date(`${d.through}T00:00:00Z`);
+  const date = through.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+  const month = through.toLocaleDateString("en-GB", { month: "long", timeZone: "UTC" });
+  return (
+    <div data-reveal className="mt-8 max-w-[32rem]">
+      <dl className="grid grid-cols-3 border-y border-rule">
+        {[
+          ["All time", d.total],
+          [String(through.getUTCFullYear()), d.year],
+          [month, d.month],
+        ].map(([label, value], i) => (
+          <div key={label} className={`py-4 ${i > 0 ? "border-l border-rule pl-4 sm:pl-5" : ""}`}>
+            <dt className="text-[13px] text-ink-faint">{label}</dt>
+            <dd className="mt-1 text-xl font-semibold tracking-[-0.01em] tabular-nums sm:text-2xl">{n(value as number)}</dd>
+          </div>
+        ))}
+      </dl>
+      <p className="mt-2.5 text-[13px] text-ink-faint">Downloads on npm, counted through {date}.</p>
+    </div>
+  );
 }
 
 // Drawn arrows on a 12px grid at a 1.25px stroke, matching the hairline weight of the page.
