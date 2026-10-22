@@ -178,8 +178,7 @@ export default function Home() {
                 Contact
               </h2>
               <p data-reveal className={`max-w-[36rem] lg:col-span-6 lg:col-start-7 ${lead}`}>
-                Email is the quickest way to reach me, and I&rsquo;m also open to freelance projects. Pick an endpoint:
-                your request takes the same path as the traffic above.
+                Email is the quickest way to reach me, and I&rsquo;m also open to freelance projects.
               </p>
             </div>
 

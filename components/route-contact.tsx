@@ -241,7 +241,7 @@ export function RouteContact({ email, emailLabel, links }: { email: string; emai
                 />
                 <span className="block text-[15px] text-ink-faint transition-colors group-hover:text-ink-soft">{e.label}</span>
                 <span className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
-                  <span className="text-xl font-semibold tracking-[-0.01em] text-ink underline decoration-rule-strong decoration-1 underline-offset-[0.22em] transition-colors group-hover:decoration-signal [overflow-wrap:anywhere] md:text-2xl">
+                  <span className="text-lg font-semibold tracking-[-0.01em] text-ink underline decoration-rule-strong decoration-1 underline-offset-[0.22em] transition-colors group-hover:decoration-signal [overflow-wrap:anywhere] md:text-xl">
                     {e.value}
                   </span>
                   {e.href ? (
