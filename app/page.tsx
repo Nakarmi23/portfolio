@@ -1,6 +1,7 @@
 import { CopyEmail } from "@/components/copy-email";
 import { HashSync } from "@/components/hash-sync";
 import { Reveal } from "@/components/reveal";
+import { RouteContact } from "@/components/route-contact";
 import { SystemStory } from "@/components/system-story";
 import { cacheLife } from "next/cache";
 import { capabilities, emailLabel, lines, person, profileLinks, register, summary } from "@/content/site";
@@ -157,47 +158,20 @@ export default function Home() {
         </section>
 
         <section id="contact" aria-labelledby="contact-title" className="border-t border-rule bg-raised">
-          <div className={`grid gap-12 pt-24 pb-20 md:pt-32 md:pb-28 lg:grid-cols-12 ${gutter}`}>
-            <div className="lg:col-span-5">
-              <h2 data-reveal id="contact-title" className={h2}>
+          <div className={`pt-24 pb-20 md:pt-32 md:pb-28 ${gutter}`}>
+            <div className="grid gap-6 lg:grid-cols-12">
+              <h2 data-reveal id="contact-title" className={`${h2} lg:col-span-5`}>
                 Contact
               </h2>
-              <p data-reveal className={`mt-6 max-w-[34rem] ${lead}`}>
-                Email is the quickest way to reach me. I&rsquo;m also open to freelance projects.
+              <p data-reveal className={`max-w-[36rem] lg:col-span-6 lg:col-start-7 ${lead}`}>
+                Email is the quickest way to reach me, and I&rsquo;m also open to freelance projects. Pick an endpoint:
+                your request takes the same path as the traffic above.
               </p>
             </div>
 
-            <dl data-reveal className="border-t border-rule-strong lg:col-span-6 lg:col-start-7 lg:mt-3">
-              <div className="flex flex-col gap-1 border-b border-rule py-5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
-                <dt className="text-[15px] text-ink-faint">Email</dt>
-                <dd className="text-lg text-ink sm:text-xl">
-                  <CopyEmail email={person.email} label={emailLabel} />
-                </dd>
-              </div>
-              {/* The whole row is the link, so the target is as wide as the rule it sits on. */}
-              {profileLinks.map((l) => (
-                <div
-                  key={l.label}
-                  className="group relative flex flex-col gap-1 border-b border-rule py-5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6"
-                >
-                  <dt className="text-[15px] text-ink-faint transition-colors group-hover:text-ink-soft">{l.label}</dt>
-                  <dd className="text-lg text-ink sm:text-xl">
-                    <a
-                      href={l.href}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-baseline gap-3 after:absolute after:inset-0"
-                    >
-                      <span className="underline decoration-rule-strong transition-colors group-hover:decoration-signal">
-                        {l.handle}
-                      </span>
-                      <ArrowOut className="size-3 self-center text-ink-faint transition-[color,translate] duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-ink" />
-                      <span className="sr-only">(opens in a new tab)</span>
-                    </a>
-                  </dd>
-                </div>
-              ))}
-            </dl>
+            <div data-reveal className="mt-14 md:mt-20">
+              <RouteContact email={person.email} emailLabel={emailLabel} links={profileLinks} />
+            </div>
           </div>
         </section>
       </main>
@@ -222,14 +196,7 @@ async function CurrentYear() {
   return new Date().getFullYear();
 }
 
-// Drawn arrows on a 12px grid at a 1.25px stroke, matching the hairline weight of the page.
-function ArrowOut({ className = "" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.25" aria-hidden className={className}>
-      <path d="M3 9 9 3M4 3h5v5" />
-    </svg>
-  );
-}
+// Drawn arrow on a 12px grid at a 1.25px stroke, matching the hairline weight of the page.
 
 function ArrowUp({ className = "" }: { className?: string }) {
   return (
