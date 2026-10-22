@@ -86,7 +86,8 @@ export const capabilities: Capability[] = [
     experiment: {
       id: "kill",
       action: "Kill a service",
-      effect: "One replica dies. Requests carry on through the others while the autoscaler starts a replacement.",
+      effect:
+        "One replica dies. Requests carry on through the others while the autoscaler starts a replacement, and the next health check finds it.",
     },
   },
   {

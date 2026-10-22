@@ -19,7 +19,7 @@ export type NodeSpec = {
 export const NODES: NodeSpec[] = [
   { id: "clients", label: "Clients", role: "Web and mobile apps", pos: [-7.2, 0, 0] },
   { id: "edge", label: "Edge", role: "CDN, TLS, static assets", pos: [-4.8, 0, 0] },
-  { id: "gateway", label: "API gateway", role: "Auth, routing, rate limits", pos: [-2.4, 0, 0] },
+  { id: "gateway", label: "API gateway", role: "Auth, routing, rate limits, health checks", pos: [-2.4, 0, 0] },
   { id: "app", label: "Services", role: "Stateless, scale out with load", pos: [0.6, 0, 0] },
   { id: "cache", label: "Cache", role: "Hot reads off the database", pos: [3.6, 0, 2.3] },
   { id: "queue", label: "Queue", role: "Absorbs bursts, never drops work", pos: [3.6, 0, -2.3] },
@@ -129,7 +129,9 @@ export function SystemScene({
       Object.assign(renderer.domElement.style, { display: "block", width: "100%", height: "100%" });
 
       const scene = new THREE.Scene();
-      scene.fog = new THREE.Fog(0x0a0c10, 30, 90);
+      // The fog follows the camera (see render), so the floor fades into the ground just beyond the system.
+      const fog = new THREE.Fog(0x0a0c10, 30, 90);
+      scene.fog = fog;
       const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
 
       const world = new THREE.Group();
@@ -151,7 +153,6 @@ export function SystemScene({
       const amber = new THREE.Color(0xffb547);
       const bodyMat = () => new THREE.MeshStandardMaterial({ color: 0x141922, metalness: 0.35, roughness: 0.55 });
       const edgeMat = () => new THREE.LineBasicMaterial({ color: steel.clone(), transparent: true, opacity: 0.9 });
-      const ledMat = new THREE.MeshBasicMaterial({ color: 0xc9d1dc });
       const screenMat = new THREE.MeshBasicMaterial({ color: 0x1b2433 });
 
       // Each part is built from simple solids, outlined in steel. The outlines turn amber when lit.
@@ -391,9 +392,17 @@ export function SystemScene({
         return new THREE.Vector3(center.x + col * colGap, y, center.z + (col % 2 ? 0.45 : -0.45));
       };
       // Services: rack servers with status lights.
+      const ledRest = new THREE.Color(0x8f98a8);
+      const ledLit = new THREE.Color(0xffffff);
+      let builtLeds: T.MeshBasicMaterial[] = [];
       const rackUnit: Parameters<typeof makeBody>[2] = (add) => {
         add(new THREE.BoxGeometry(1, 0.26, 0.66));
-        for (const x of [0.32, 0.4]) add(new THREE.BoxGeometry(0.04, 0.04, 0.02), [x, 0, 0.335], [0, 0, 0], ledMat, false);
+        // Each server has its own status lights, so a health check can blink them one server at a time.
+        builtLeds = [0.32, 0.4].map((x) => {
+          const m = new THREE.MeshBasicMaterial({ color: ledRest.clone() });
+          add(new THREE.BoxGeometry(0.04, 0.04, 0.02), [x, 0, 0.335], [0, 0, 0], m, false);
+          return m;
+        });
         add(new THREE.BoxGeometry(0.5, 0.03, 0.02), [-0.18, 0, 0.335], [0, 0, 0], screenMat, false);
       };
       // Workers: gears that turn as they work.
@@ -424,8 +433,75 @@ export function SystemScene({
       const appReplicas = Array.from({ length: MAX_APP }, (_, i) => {
         const b = makeBody(slot(at("app"), i, 5, 0.34, 1.2), "app", rackUnit);
         b.scale = b.target = i < 3 ? 1 : 0;
-        return b;
+        // checkAt: when the passing check reaches this server; pulse: how bright its flash still is.
+        const faces: T.MeshStandardMaterial[] = [];
+        b.group.traverse((o) => {
+          const m = (o as T.Mesh).material;
+          if (m instanceof THREE.MeshStandardMaterial) faces.push(m);
+        });
+        return Object.assign(b, { leds: builtLeds, faces, slot: i, checkAt: -1, pulse: 0 });
       });
+
+      // Health checks: every few seconds the gateway checks its services, like a load balancer does. A faint
+      // steel ring spreads across the floor from the gateway; as it passes each live server, that server's
+      // status lights blink white. A killed server misses the check, and its replacement is checked next time.
+      // Steel and white, not amber: this is the system checking itself, not traffic.
+      const CHECK_EVERY = 4.2;
+      const CHECK_REACH = 6;
+      const ring = (() => {
+        const pts: T.Vector3[] = [];
+        for (let k = 0; k <= 96; k++) {
+          const a = (k / 96) * Math.PI * 2;
+          pts.push(new THREE.Vector3(Math.cos(a), 0, Math.sin(a)));
+        }
+        const line = new THREE.LineLoop(
+          new THREE.BufferGeometry().setFromPoints(pts),
+          new THREE.LineBasicMaterial({ color: 0xc9d1dc, transparent: true, opacity: 0, depthWrite: false }),
+        );
+        line.position.set(at("gateway").x, -1.095, at("gateway").z);
+        line.visible = false;
+        world.add(line);
+        return line;
+      })();
+      const check = { next: 1.2, start: -1 };
+      const white = new THREE.Color(0xffffff);
+      const healthCheck = (dt: number) => {
+        if (clock >= check.next) {
+          check.start = clock;
+          check.next = clock + CHECK_EVERY;
+          appReplicas.forEach((r) => (r.checkAt = -1));
+        }
+        const ringMat = ring.material as T.LineBasicMaterial;
+        const radius = (clock - check.start) * 4.2;
+        if (check.start < 0 || radius > CHECK_REACH) {
+          ring.visible = false;
+        } else {
+          ring.visible = true;
+          ring.scale.setScalar(Math.max(0.01, radius));
+          ringMat.opacity = 0.32 * (1 - radius / CHECK_REACH);
+          // As the ring reaches the stack, its servers answer one after another, bottom to top.
+          const g = at("gateway");
+          for (const r of appReplicas) {
+            if (r.checkAt >= 0 || r.target < 0.5) continue;
+            const p = r.group.position;
+            if (Math.hypot(p.x - g.x, p.z - g.z) <= radius) r.checkAt = clock + (r.slot % 5) * 0.07;
+          }
+        }
+        // A server that answers flashes: its body lights up, its outline and status lights go white, then it all
+        // cools back over about 0.7s.
+        const outline = litKey.split(",").includes("app") ? amber : steel;
+        for (const r of appReplicas) {
+          if (r.checkAt >= 0 && clock >= r.checkAt) {
+            r.pulse = r.target > 0.5 ? 1 : 0;
+            r.checkAt = Infinity;
+          }
+          r.pulse = Math.max(0, r.pulse - dt * 1.5);
+          const k = r.pulse * r.pulse;
+          for (const m of r.lines) m.color.copy(outline).lerp(white, k * 0.55);
+          for (const m of r.leds) m.color.copy(ledRest).lerp(ledLit, k);
+          for (const m of r.faces) m.emissive.setScalar(k * 0.06);
+        }
+      };
       const workerReplicas = Array.from({ length: MAX_WORKERS }, (_, i) => {
         const b = makeBody(slot(at("workers"), i, 3, 0.82, 1.1, true), "workers", gear);
         b.pivot.rotation.z = i * 0.3;
@@ -883,6 +959,7 @@ export function SystemScene({
         pointsGeo.attributes.position.needsUpdate = true;
 
         warm.intensity = 3 + Math.min(10, L * 0.25);
+        healthCheck(dt);
         const ease = Math.min(1, dt * 2);
         world.rotation.y += (-0.2 + pointer.x * 0.1 + Math.sin(t * 0.11) * 0.17 - world.rotation.y) * ease;
         world.rotation.x += (pointer.y * -0.03 - world.rotation.x) * ease;
@@ -898,6 +975,9 @@ export function SystemScene({
       const render = () => {
         camera.setViewOffset(frame.w, frame.h, off.x, off.y, frame.w, frame.h);
         camera.position.copy(camPos);
+        const reach = camPos.distanceTo(camLook);
+        fog.near = reach + 4;
+        fog.far = reach + 28;
         camera.lookAt(camLook);
         world.updateMatrixWorld();
         raycaster.setFromCamera(pointer, camera);

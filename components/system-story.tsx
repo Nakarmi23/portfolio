@@ -125,7 +125,7 @@ export function SystemStory({ hero, steps }: { hero: ReactNode; steps: Capabilit
         >
           <div className="flex flex-1 flex-col justify-center py-10 lg:flex-none lg:py-0">
             <div ref={stageRef} aria-hidden className="aspect-[10/3] max-h-[40svh] lg:hidden" />
-            <div ref={copyRef} className="pointer-events-auto mt-8 px-4 sm:px-8 md:max-w-[52rem] lg:mt-0 lg:px-14 xl:px-20">
+            <div ref={copyRef} className="pointer-events-auto mt-16 px-4 sm:mt-12 sm:px-8 md:max-w-[52rem] lg:mt-0 lg:px-14 xl:px-20">
               {hero}
               {/* Tablets have the height to keep the load control on the first screen, under the copy. */}
               {panel && <div className="mt-10 hidden max-w-[30rem] md:block lg:hidden">{panel}</div>}
@@ -240,7 +240,7 @@ function LoadPanel({
             <span className="text-ink">{node.label}:</span> {node.role}.
           </>
         ) : (
-          "Drag to push traffic through. Services and workers scale out; the queue takes the bursts."
+          "Drag to push traffic through. Services and workers scale out; the queue takes the bursts. The ring is the gateway health-checking its services."
         )}
       </p>
     </div>
