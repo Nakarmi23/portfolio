@@ -29,7 +29,7 @@ export type CaseLine = {
 export const person = {
   name: "Ankit Nakarmi",
   role: "Software Engineer & Solutions Architect",
-  availability: "[Availability, e.g. booking projects from January]",
+  availability: "Available for new projects now",
   email: "ankit.nakarmi23@gmail.com",
   linkedin: "https://www.linkedin.com/in/ankit-nakarmi-3ba89b19a",
   github: "https://github.com/Nakarmi23",
