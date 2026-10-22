@@ -222,13 +222,14 @@ export default function Home() {
               <h3 data-reveal className="text-lg font-semibold">
                 What helps in a first email
               </h3>
-              <ol className="mt-5 border-t border-rule">
+              <ul className="mt-6 space-y-4">
                 {firstEmail.map((item) => (
-                  <li data-reveal key={item} className="border-b border-rule py-4 text-lg leading-snug">
+                  <li data-reveal key={item} className="relative pl-7 text-lg leading-snug text-ink-soft">
+                    <span aria-hidden className="absolute top-[0.45rem] left-0 size-[11px] border border-steel" />
                     {item}
                   </li>
                 ))}
-              </ol>
+              </ul>
             </div>
           </div>
 
