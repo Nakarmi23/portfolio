@@ -182,11 +182,12 @@ export function RouteContact({ email, emailLabel, links }: { email: string; emai
       </svg>
       <div ref={flight} aria-hidden className="pointer-events-none absolute inset-0" />
 
-      <div className="relative grid gap-10 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-x-20">
-        <div className="md:flex md:flex-col md:justify-center">
+      {/* On the page's 12-column grid from lg, so the endpoints line up under the intro's lead like every section. */}
+      <div className="relative grid gap-10 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-x-20 lg:grid-cols-12 lg:gap-x-6">
+        <div className="md:flex md:flex-col md:justify-center lg:col-span-5">
           <ol aria-label="Route" className="flex flex-col gap-7 md:flex-row md:items-start md:justify-between">
             {HOPS.map((h) => (
-              <li key={h.id} className="flex items-center gap-5 md:flex-col md:gap-3">
+              <li key={h.id} className="flex items-center gap-[29px] md:flex-col md:gap-3">
                 <span
                   data-node={h.id}
                   className={`block size-[11px] border transition-colors duration-300 md:hidden ${
@@ -228,7 +229,7 @@ export function RouteContact({ email, emailLabel, links }: { email: string; emai
           </div>
         </div>
 
-        <ul className="border-t border-rule-strong">
+        <ul className="border-t border-rule-strong lg:col-span-6 lg:col-start-7">
           {endpoints.map((e) => {
             const inner = (
               <>
