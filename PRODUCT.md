@@ -43,7 +43,7 @@ Ankit works across both levels: hands-on full-stack engineering and solutions ar
 
 ## Evidence on Hand
 
-- Ankit has real case studies/projects and a résumé/work history, but none of it is in the repo yet. Ask for the content; don't write placeholder projects.
+- Work history is in the repo. Selected work currently holds one project: the open-source Bikram Sambat library (`@nakarmi23/bikram-sambat` on npm), written only from facts in its package and README. The companion React calendar package exists but is deliberately left out for now. Ask for further projects; don't write placeholder ones.
 - **Absent:** testimonials, client logos, metrics, press, talks, and open-source highlights. Don't fabricate any of them or imply they exist.
 - The email address and the LinkedIn and GitHub URLs still need to be provided.
 

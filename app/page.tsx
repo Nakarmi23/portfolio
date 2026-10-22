@@ -67,8 +67,7 @@ export default function Home() {
               Selected work
             </h2>
             <p data-reveal className={`max-w-[36rem] lg:col-span-6 lg:col-start-7 ${lead}`}>
-              What I built, and the calls that made it hold up: the context, the constraint, the decision, and what
-              shipped.
+              What I built and how it works, from the problem it solves to what shipped.
             </p>
           </div>
 
@@ -95,6 +94,19 @@ export default function Home() {
                       </li>
                     ))}
                   </ul>
+                  {line.links.length > 0 && (
+                    <ul data-reveal className="mt-6 space-y-2 text-lg text-ink-soft">
+                      {line.links.map((l) => (
+                        <li key={l.href}>
+                          <a href={l.href} target="_blank" rel="noreferrer" className={`group inline-flex items-baseline gap-2.5 ${hit}`}>
+                            <span className={link}>{l.label}</span>
+                            <ArrowOut className="size-3 self-center text-ink-faint transition-[color,translate] duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-ink" />
+                            <span className="sr-only">(opens in a new tab)</span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </div>
 
@@ -196,7 +208,14 @@ async function CurrentYear() {
   return new Date().getFullYear();
 }
 
-// Drawn arrow on a 12px grid at a 1.25px stroke, matching the hairline weight of the page.
+// Drawn arrows on a 12px grid at a 1.25px stroke, matching the hairline weight of the page.
+function ArrowOut({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.25" aria-hidden className={className}>
+      <path d="M3 9 9 3M4 3h5v5" />
+    </svg>
+  );
+}
 
 function ArrowUp({ className = "" }: { className?: string }) {
   return (

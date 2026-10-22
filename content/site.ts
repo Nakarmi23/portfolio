@@ -3,20 +3,20 @@ import type { Experiment, NodeId } from "@/components/system-scene";
 // Everything a visitor reads on the landing page lives here.
 // Values wrapped in [brackets] are placeholders: replace them with real content before shipping.
 
-export type LineId = "a" | "b" | "c";
-
 export type Station = {
   label: string;
   body: string;
 };
 
 export type CaseLine = {
-  id: LineId;
-  code: string;
+  id: string;
   name: string;
+  // Who it was for, or what kind of work it is.
   client: string;
   summary: string;
   stack: string[];
+  // Where the work can be seen, e.g. its package on a registry.
+  links: { label: string; href: string }[];
   stations: Station[];
 };
 
@@ -105,56 +105,37 @@ export const capabilities: Capability[] = [
   },
 ];
 
-const placeholderStations: Station[] = [
-  {
-    label: "Context",
-    body: "[What the client had, who used it, and what was starting to break.]",
-  },
-  {
-    label: "Constraint",
-    body: "[The hard limits: budget, deadline, legacy systems, team size, compliance.]",
-  },
-  {
-    label: "Decision",
-    body: "[The architectural call you made, and the options you rejected.]",
-  },
-  {
-    label: "Trade-off",
-    body: "[What that decision cost, and why it was worth paying.]",
-  },
-  {
-    label: "Shipped",
-    body: "[What went live, and what changed for the client afterwards.]",
-  },
-];
-
 export const lines: CaseLine[] = [
   {
-    id: "a",
-    code: "A",
-    name: "[Project A name]",
-    client: "[Client or sector]",
-    summary: "[One sentence: the system you designed and built, and the problem it solved.]",
-    stack: ["[Tech]", "[Tech]", "[Tech]"],
-    stations: placeholderStations,
-  },
-  {
-    id: "b",
-    code: "B",
-    name: "[Project B name]",
-    client: "[Client or sector]",
-    summary: "[One sentence: the system you designed and built, and the problem it solved.]",
-    stack: ["[Tech]", "[Tech]", "[Tech]"],
-    stations: placeholderStations,
-  },
-  {
-    id: "c",
-    code: "C",
-    name: "[Project C name]",
-    client: "[Client or sector]",
-    summary: "[One sentence: the system you designed and built, and the problem it solved.]",
-    stack: ["[Tech]", "[Tech]", "[Tech]"],
-    stations: placeholderStations,
+    id: "bikram-sambat",
+    name: "Bikram Sambat",
+    client: "Open-source library on npm",
+    summary:
+      "A TypeScript library for Nepal’s Bikram Sambat calendar: converting between AD and BS dates, and parsing, formatting, shifting and comparing BS dates from 1970 to 2111 BS.",
+    stack: ["TypeScript", "Day.js", "Jest", "tsup"],
+    links: [{ label: "@nakarmi23/bikram-sambat on npm", href: "https://www.npmjs.com/package/@nakarmi23/bikram-sambat" }],
+    stations: [
+      {
+        label: "Problem",
+        body: "Nepal runs on the Bikram Sambat calendar, but JavaScript’s Date only knows the Gregorian one. BS month lengths change from year to year, so a date can’t be converted with a formula alone.",
+      },
+      {
+        label: "Approach",
+        body: "A BikramSambat date object you can start from a BS string, an AD date or today, then read and set its year, month and day. Each instance carries its AD date and the BS month name alongside.",
+      },
+      {
+        label: "API",
+        body: "Formatting, start and end of a unit, adding and subtracting, and comparisons (isSame, isBefore, isAfter, isBetween), named the way Day.js names them, which the library builds on.",
+      },
+      {
+        label: "Range",
+        body: "Covers 1970 to 2111 BS. Parsing validates the date and only accepts years in that range, and the month table for any year in it is available on its own.",
+      },
+      {
+        label: "Shipped",
+        body: "Published to npm in June 2024 with ES module, CommonJS and TypeScript type builds, tested with Jest and MIT licensed. Maintained since, with fixes for comparisons and arithmetic when a BS month spans two AD months.",
+      },
+    ],
   },
 ];
 
